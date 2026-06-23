@@ -77,7 +77,6 @@ sourceSets.main.get().resources.srcDir("src/generated/resources")
 dependencies {
     implementation("com.simibubi.create:create-1.21.1:6.0.10-281")
     implementation("software.bernie.geckolib:geckolib-neoforge-1.21.1:4.8.4")
-    implementation(files("lib/pantographsandwires-neoforge-1.21.1-beta-0.2.2-C6.jar"))
 }
 
 var generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
@@ -96,7 +95,9 @@ var generateModMetadata = tasks.register<ProcessResources>("generateModMetadata"
     )
     inputs.properties(replaceProperties)
     expand(replaceProperties)
-    from("src/main/templates/neoforge.mods.toml")
+    from("src/main/templates/neoforge.mods.toml") {
+        into("META-INF")
+    }
     into("build/generated/sources/modMetadata")
 }
 

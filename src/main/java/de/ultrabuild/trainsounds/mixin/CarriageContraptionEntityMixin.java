@@ -1,5 +1,6 @@
 package de.ultrabuild.trainsounds.mixin;
 
+import net.minecraft.core.HolderLookup;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import de.ultrabuild.trainsounds.logic.EngineToggleCarrier;
@@ -41,7 +42,7 @@ public abstract class CarriageContraptionEntityMixin implements EngineToggleCarr
     }
 
     @Inject(method = "writeAdditional", at = @At("TAIL"), remap = false)
-    private void trainsounds$writeEngineState(CompoundTag compound, boolean spawnPacket, CallbackInfo ci) {
+    private void trainsounds$writeEngineState(CompoundTag compound, HolderLookup.Provider provider, boolean spawnPacket, CallbackInfo ci) {
         compound.putBoolean(TRAINSOUNDS_ENGINE_NBT_KEY, trainsounds$isEngineBuiltIn());
     }
 

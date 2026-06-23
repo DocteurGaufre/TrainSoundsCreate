@@ -5,7 +5,6 @@ import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.CarriageSounds;
-import de.mrjulsen.paw.blockentity.PantographBlockEntity;
 import de.ultrabuild.trainsounds.Trainsounds;
 import de.ultrabuild.trainsounds.client.config.TrainSoundVolumeConfigManager;
 import de.ultrabuild.trainsounds.logic.EngineToggleCarrier;
@@ -182,19 +181,7 @@ public abstract class CarriageSoundsMixin {
 
     @Unique
     private boolean trainsounds$hasLivePantographContact(CarriageContraptionEntity carriageEntity) {
-        Contraption contraption = carriageEntity.getContraption();
-        if (contraption == null || contraption.getBlocks() == null || contraption.getBlocks().isEmpty()) {
-            return false;
-        }
-
-        for (BlockPos localPos : contraption.getBlocks().keySet()) {
-            var blockEntity = contraption.getBlockEntityClientSide(localPos);
-            if (blockEntity instanceof PantographBlockEntity pantographBlockEntity && pantographBlockEntity.isExpanded()) {
-                return true;
-            }
-        }
-
-        return false;
+        return true; 
     }
 
     @Unique
