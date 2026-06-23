@@ -1,0 +1,21 @@
+{
+  "electric": {
+    "sounds": [
+      {
+        "name": "trainsounds:electric",
+        "type": "file",
+        "attenuation_distance": 64
+      }
+    ]
+  },
+  "diesel": {
+    "sounds": [
+      {
+        "name": "trainsounds:diesel",
+        "type": "file",
+        "attenuation_distance": 64
+      }
+    ]
+  }
+}
+

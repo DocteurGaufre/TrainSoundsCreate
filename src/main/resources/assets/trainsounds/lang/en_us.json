@@ -1,0 +1,16 @@
+{
+  "item.trainsounds.engine_toggle_tool": "Engine Toggle Tool",
+  "message.trainsounds.engine_on": "Engine enabled for carriage %s",
+  "message.trainsounds.engine_off": "Engine disabled for carriage %s",
+  "screen.trainsounds.volume.title": "Train Engine Volumes",
+  "screen.trainsounds.carriage_management": "Train Carriage Management",
+  "gui.trainsounds.volume_entry": "%s: %s%%",
+  "gui.trainsounds.channel.diesel": "Diesel",
+  "gui.trainsounds.channel.electric": "Electric",
+  "gui.trainsounds.channel.aux": "Aux",
+  "gui.trainsounds.carriage_info": "Carriage %s of %s",
+  "gui.trainsounds.engine_toggle": "Engine: %s",
+  "gui.trainsounds.engine_on": "ON",
+  "gui.trainsounds.engine_off": "OFF"
+}
+
