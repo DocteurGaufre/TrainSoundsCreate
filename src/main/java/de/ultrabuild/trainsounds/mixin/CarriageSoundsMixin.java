@@ -102,11 +102,6 @@ public abstract class CarriageSoundsMixin {
             return;
         }
 
-        /*if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get() && !trainsounds$hasLivePantographOnTrain(carriageEntity)) {
-            return;
-        }*/
-
-        // REMPLACEZ PAR CELLE-CI :
         boolean isElectric = selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get() || selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get() || selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get();
 
         Vec3 soundLocation = carriageEntity.position();
@@ -114,31 +109,86 @@ public abstract class CarriageSoundsMixin {
         float basePitch = trainsounds$dynamicPitchFromTrainSpeed(carriageEntity, 1.0f);
         float baseVolume = Mth.clamp((float) (speedPerTick * 18.0f), 0.20f, 2.5f) * userVolume;
 
+        float maxSpeedPerTick = Math.max(carriageEntity.getCarriage().train.maxSpeed(), 0.001f);
+        float normalizedSpeed = Mth.clamp((float) (speedPerTick / maxSpeedPerTick), 0.0f, 1.0f);
+
+        // =====================================================================
+        // RÉGLAGE DE L'ÉTOUFFEMENT DYNAMIQUE POUR LA M7
+        float m7MuffleFactor = 0.10f; 
+        float currentMuffle = 1.0f; // Par défaut, 100% du volume
+        
+        if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
+            if (normalizedSpeed <= 0.20f) {
+                // De 0% à 20% : étouffement total
+                currentMuffle = m7MuffleFactor;
+            } else if (normalizedSpeed <= 0.30f) {
+                // De 20% à 30% : on retire l'étouffement progressivement (plage de 10%)
+                float unMuffleProgress = (normalizedSpeed - 0.20f) / 0.10f; 
+                currentMuffle = Mth.lerp(unMuffleProgress, m7MuffleFactor, 1.0f);
+            }
+        }
+        // =====================================================================
+
         long pulseTime = world.getGameTime();
         int phaseOffset = Math.floorMod(carriageEntity.getId(), 7);
 
         if (speedPerTick >= 0.001) {
             if ((pulseTime + phaseOffset) % 3 == 0) {
+                
+                float actualBaseVol = baseVolume * 1.25f * currentMuffle;
+
                 world.playLocalSound(
                         soundLocation.x,
                         soundLocation.y,
                         soundLocation.z,
                         selectedSound,
                         SoundSource.NEUTRAL,
-                        Mth.clamp(baseVolume * 1.25f, 0.25f, 3.5f),
+                        Mth.clamp(actualBaseVol, 0.25f, 3.5f),
                         Mth.clamp(basePitch * 1.05f, 0.5f, 2.5f),
                         false
                 );
+
+                // Sons additionnels M7
+                if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
+                    
+                    // Son 1 : Aigu (0% à 15%)
+                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.15f) {
+                        float fadeIn = normalizedSpeed / 0.15f;
+                        float start1Volume = Mth.clamp(fadeIn * 2.5f * userVolume, 0.1f, 3.0f);
+                        world.playLocalSound(
+                                soundLocation.x, soundLocation.y, soundLocation.z,
+                                Trainsounds.M7_START1_SOUND_EVENT.get(), SoundSource.NEUTRAL,
+                                start1Volume, 1.0f, false
+                        );
+                    }
+
+                    // Son 2 : Grave (15% à 30%)
+                    if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.30f) {
+                        float fadeOut = 1.0f;
+                        if (normalizedSpeed > 0.25f) {
+                            // Fade Out progressif sur les derniers 5% (entre 25% et 30%)
+                            fadeOut = Mth.clamp(1.0f - ((normalizedSpeed - 0.25f) / 0.05f), 0.0f, 1.0f);
+                        }
+                        float start2Volume = Mth.clamp(fadeOut * 2.5f * userVolume, 0.0f, 3.0f);
+                        world.playLocalSound(
+                                soundLocation.x, soundLocation.y, soundLocation.z,
+                                Trainsounds.M7_START2_SOUND_EVENT.get(), SoundSource.NEUTRAL,
+                                start2Volume, Mth.clamp(basePitch * 0.9f, 0.5f, 2.5f), false
+                        );
+                    }
+                }
             }
 
             if ((pulseTime + phaseOffset) % 9 == 0) {
+                float actualBaseVol = baseVolume * 1.9f * currentMuffle;
+
                 world.playLocalSound(
                         soundLocation.x,
                         soundLocation.y,
                         soundLocation.z,
                         selectedSound,
                         SoundSource.NEUTRAL,
-                        Mth.clamp(baseVolume * 1.9f, 0.35f, 4.0f),
+                        Mth.clamp(actualBaseVol, 0.35f, 4.0f),
                         Mth.clamp(basePitch * 0.82f, 0.5f, 2.5f),
                         false
                 );
@@ -147,13 +197,15 @@ public abstract class CarriageSoundsMixin {
         }
 
         if ((pulseTime + phaseOffset) % 6 == 0) {
+            float actualIdleVol = 0.9f * userVolume * currentMuffle;
+
             world.playLocalSound(
                     soundLocation.x,
                     soundLocation.y,
                     soundLocation.z,
                     selectedSound,
                     SoundSource.NEUTRAL,
-                    0.9f * userVolume,
+                    actualIdleVol,
                     0.45f,
                     false
             );
