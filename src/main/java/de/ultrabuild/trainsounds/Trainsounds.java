@@ -24,6 +24,7 @@ public class Trainsounds {
 
     public static final java.util.function.Supplier<SoundEvent> ELECTRIC_SOUND_EVENT = SOUND_EVENTS.register("electric", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, "electric")));
     public static final java.util.function.Supplier<SoundEvent> DIESEL_SOUND_EVENT = SOUND_EVENTS.register("diesel", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, "diesel")));
+    public static final java.util.function.Supplier<SoundEvent> DEFAULT_SOUND_EVENT = SOUND_EVENTS.register("default", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, "default")));
     
     public static final java.util.function.Supplier<Item> ENGINE_TOGGLE_ITEM = ITEMS.register("engine_toggle_tool", () -> new EngineToggleItem(new Item.Properties().stacksTo(1)));
 

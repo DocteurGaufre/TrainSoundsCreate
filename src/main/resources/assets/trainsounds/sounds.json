@@ -16,6 +16,15 @@
         "attenuation_distance": 64
       }
     ]
+  },
+    "default": {
+    "sounds": [
+      {
+        "name": "trainsounds:default",
+        "type": "file",
+        "attenuation_distance": 64
+      }
+    ]
   }
 }
 

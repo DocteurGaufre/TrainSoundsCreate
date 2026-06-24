@@ -102,9 +102,12 @@ public abstract class CarriageSoundsMixin {
             return;
         }
 
-        if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get() && !trainsounds$hasLivePantographOnTrain(carriageEntity)) {
+        /*if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get() && !trainsounds$hasLivePantographOnTrain(carriageEntity)) {
             return;
-        }
+        }*/
+
+        // REMPLACEZ PAR CELLE-CI :
+        boolean isElectric = selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get() || selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get() || selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get();
 
         Vec3 soundLocation = carriageEntity.position();
         double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
@@ -216,7 +219,8 @@ public abstract class CarriageSoundsMixin {
         }
 
         String icon = carriageEntity.getCarriage().train.icon.getId().getPath();
-        return "electric".equals(icon) || "modern".equals(icon);
+        // On écoute les 3 identifiants de base de Create
+        return "default".equals(icon) || "modern".equals(icon) || "electric".equals(icon);
     }
 
     @Unique
@@ -229,37 +233,47 @@ public abstract class CarriageSoundsMixin {
         String icon = carriageEntity.getCarriage().train.icon.getId().getPath();
 
         return switch (icon) {
-            case "electric" -> Trainsounds.ELECTRIC_SOUND_EVENT.get();
-            case "modern" -> Trainsounds.DIESEL_SOUND_EVENT.get();
+            case "default" -> Trainsounds.DEFAULT_SOUND_EVENT.get();  // Remplace la vapeur par la MX
+            case "modern" -> Trainsounds.DIESEL_SOUND_EVENT.get();   // Remplace le diesel par la M6
+            case "electric" -> Trainsounds.ELECTRIC_SOUND_EVENT.get(); // Garde l'électrique pour la M7
             default -> null;
         };
     }
 
     @Unique
     private String trainsounds$resolveChannel(SoundEvent selectedSound) {
-        if (selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get()) {
-            return "diesel";
+        if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get() || 
+            selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get() || 
+            selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
+            return "electric"; // Vous pouvez grouper vos 3 métros sous le même curseur de volume
         }
-
-        if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            return "electric";
-        }
-
-        return "aux";
+        return "diesel";
     }
 
     @Unique
     private float trainsounds$dynamicPitchFromTrainSpeed(CarriageContraptionEntity carriageEntity, float basePitch) {
         double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
         if (carriageEntity.getCarriage() == null || carriageEntity.getCarriage().train == null) {
-            return Mth.clamp(basePitch, 0.5f, 2.5f);
+            return Mth.clamp(basePitch, 0.5f, 2.0f);
         }
 
         float maxSpeedPerTick = Math.max(carriageEntity.getCarriage().train.maxSpeed(), 0.001f);
+        
+        // 1. On calcule le pourcentage de vitesse normale (de 0.0 à 1.0)
         float normalizedSpeed = Mth.clamp((float) (speedPerTick / maxSpeedPerTick), 0.0f, 1.0f);
-        float curved = (float) Math.pow(normalizedSpeed, 0.65f);
-        float pitchScale = Mth.lerp(curved, 0.95f, 1.45f);
-        return Mth.clamp(basePitch * pitchScale, 0.5f, 2.5f);
+        
+        // 2. MODIFICATION : On booste ce pourcentage. 
+        // En divisant par 0.70f, quand normalizedSpeed est à 0.7, effectiveSpeed est à 1.0 !
+        // Le Mth.clamp empêche le son de continuer à monter si on dépasse les 70%.
+        float effectiveSpeed = Mth.clamp(normalizedSpeed / 0.70f, 0.0f, 1.0f);
+        
+        // 3. On applique la courbe sur cette nouvelle vitesse "boostée"
+        float curved = (float) Math.pow(effectiveSpeed, 0.65f);
+        
+        // 4. On interpole entre le pitch d'arrêt (0.70) et le pitch maximum (2.0)
+        float pitchScale = Mth.lerp(curved, 0.70f, 2.00f);
+        
+        return Mth.clamp(basePitch * pitchScale, 0.5f, 2.0f);
     }
 
     @Unique
