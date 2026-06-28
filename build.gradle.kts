@@ -26,6 +26,50 @@ repositories {
     maven {
         url = uri("https://maven.tterrag.com/")
     }
+    // Pour JEI
+    maven {
+        name = "ModMaven"
+        url = uri("https://modmaven.dev/")
+    }
+    // Pour les mods Modrinth (Farmer's Delight, etc.)
+    maven {
+        name = "Modrinth"
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroup("maven.modrinth")
+        }
+    }
+    // Pour FTB Teams / Chunks / Library
+    maven {
+        name = "Saps"
+        url = uri("https://maven.saps.dev/releases")
+        content {
+            includeGroup("dev.ftb.mods")
+            includeGroup("dev.latvian.mods")
+        }
+    }
+    // Pour Curios
+    maven {
+        name = "IllusiveC4"
+        url = uri("https://maven.theillusivec4.top/")
+    }
+    // Pour CC: Tweaked (ComputerCraft)
+    maven {
+        name = "SquidDev"
+        url = uri("https://maven.squiddev.cc/")
+    }
+    // Pour Architectury
+    maven {
+        name = "Architectury"
+        url = uri("https://maven.architectury.dev/")
+    }
+    maven {
+        name = "IThundxr (Registrate 1.21.1)"
+        url = uri("https://maven.ithundxr.dev/snapshots")
+        content {
+            includeGroup("com.tterrag.registrate")
+        }
+    }
 }
 
 base {
@@ -75,7 +119,11 @@ neoForge {
 sourceSets.main.get().resources.srcDir("src/generated/resources")
 
 dependencies {
-    implementation("com.simibubi.create:create-1.21.1:6.0.10-281")
+    implementation("com.simibubi.create:create-1.21.1:6.0.10-281") {
+        exclude(group = "info.journeymap")
+        exclude(group = "dev.ftb.mods")
+        exclude(group = "dev.architectury")
+    }
     implementation("software.bernie.geckolib:geckolib-neoforge-1.21.1:4.8.4")
 }
 
