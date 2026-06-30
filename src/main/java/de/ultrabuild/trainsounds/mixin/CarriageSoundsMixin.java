@@ -1,16 +1,12 @@
 package de.ultrabuild.trainsounds.mixin;
 
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.CarriageSounds;
 import de.ultrabuild.trainsounds.Trainsounds;
-import de.ultrabuild.trainsounds.client.config.TrainSoundVolumeConfigManager;
 import de.ultrabuild.trainsounds.logic.EngineToggleCarrier;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -21,7 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -129,6 +124,8 @@ public abstract class CarriageSoundsMixin {
         if (speedPerTick >= 0.001) {
             if ((pulseTime + phaseOffset) % 3 == 0) {
 
+                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.02f;
+
                 float actualBaseVol = baseVolume * 1.25f * currentMuffle;
 
                 if (actualBaseVol > 0.0f) {
@@ -139,7 +136,7 @@ public abstract class CarriageSoundsMixin {
                             selectedSound,
                             SoundSource.NEUTRAL,
                             Mth.clamp(actualBaseVol, 0.0f, 1.5f), // Plancher descendu à 0.0f
-                            Mth.clamp(basePitch * 1.05f, 0.5f, 2.5f),
+                            Mth.clamp((basePitch * 1.05f) + pitchJitter, 0.5f, 2.5f),
                             false);
                 }
 
@@ -153,7 +150,7 @@ public abstract class CarriageSoundsMixin {
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
                                 Trainsounds.M7_START1_SOUND_EVENT.get(), SoundSource.NEUTRAL,
-                                start1Volume, 1.0f, false);
+                                start1Volume, 1.0f + pitchJitter, false);
                     }
 
                     // Son 2 : Grave (10% à 30%)
@@ -177,7 +174,7 @@ public abstract class CarriageSoundsMixin {
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
                                 Trainsounds.M7_START2_SOUND_EVENT.get(), SoundSource.NEUTRAL,
-                                start2Volume, 1.0f, false);
+                                start2Volume, 1.0f + pitchJitter, false);
                     }
                 }
 
@@ -205,12 +202,15 @@ public abstract class CarriageSoundsMixin {
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
                                 Trainsounds.MX_START1_SOUND_EVENT.get(), SoundSource.NEUTRAL,
-                                finalMxVol, 1.0f, false);
+                                finalMxVol, 1.0f + pitchJitter, false);
                     }
                 }
             }
 
             if ((pulseTime + phaseOffset) % 9 == 0) {
+
+                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.02f;
+
                 float actualBaseVol = baseVolume * 1.9f * currentMuffle;
 
                 // On ajoute notre sécurité ici
@@ -222,7 +222,7 @@ public abstract class CarriageSoundsMixin {
                             selectedSound,
                             SoundSource.NEUTRAL,
                             Mth.clamp(actualBaseVol, 0.0f, 2.0f), // <-- Plancher à 0.0f
-                            Mth.clamp(basePitch * 0.82f, 0.5f, 2.5f),
+                            Mth.clamp((basePitch * 0.82f) + pitchJitter, 0.5f, 2.5f),
                             false);
                 }
             }
@@ -358,7 +358,7 @@ public abstract class CarriageSoundsMixin {
         float normalizedSpeed = Mth.clamp((float) (speedPerTick / maxSpeedPerTick), 0.0f, 1.0f);
 
         // =================================================================
-        // 🎛️ CALCUL DU PITCH SPÉCIFIQUE À LA RAMA MX (DEFAULT_SOUND_EVENT)
+        // 🎛️ CALCUL DU PITCH SPÉCIFIQUE À LA RAME MX (DEFAULT_SOUND_EVENT)
         // =================================================================
         if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
             // Le son démarre à 1.0x (votre audio rabaissé)
