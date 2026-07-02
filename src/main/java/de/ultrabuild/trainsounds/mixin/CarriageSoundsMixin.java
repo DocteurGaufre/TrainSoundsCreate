@@ -98,21 +98,24 @@ public abstract class CarriageSoundsMixin {
 
         // --- Profil M7 (Électrique) ---
         if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.15f) {
+            if (normalizedSpeed <= 0.10f) {
+                // De 0% à 15% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
-            } else if (normalizedSpeed <= 0.30f) {
-                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.15f;
+            } else if (normalizedSpeed <= 0.60f) {
+                // De 15% à 60% : Le son de base monte de 0% à 100%
+                // La plage de montée dure maintenant 45% (0.60 - 0.15)
+                float unMuffleProgress = (normalizedSpeed - 0.10f) / 0.50f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
         // --- Profil MX (Traditionnel/Défaut) ---
         else if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.05f) {
+            if (normalizedSpeed <= 0.15f) {
                 // De 0% à 5% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.25f) {
                 // De 5% à 25% : Le son de base monte de 0% à 100%
-                float unMuffleProgress = (normalizedSpeed - 0.05f) / 0.15f;
+                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.10f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -124,7 +127,7 @@ public abstract class CarriageSoundsMixin {
         if (speedPerTick >= 0.001) {
             if ((pulseTime + phaseOffset) % 3 == 0) {
 
-                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.02f;
+                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.01f;
 
                 float actualBaseVol = baseVolume * 1.25f * currentMuffle;
 
@@ -153,23 +156,23 @@ public abstract class CarriageSoundsMixin {
                                 start1Volume, 1.0f + pitchJitter, false);
                     }
 
-                    // Son 2 : Grave (10% à 30%)
-                    if (normalizedSpeed > 0.10f && normalizedSpeed <= 0.30f) {
+                    // Son 2 : Grave (15% à 30%)
+                    if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.30f) {
                         float fadeOut = 1.0f;
                         float fadeIn = 1.0f;
 
                         // NOUVEAU : Fade In progressif sur les 2 premiers % (entre 10% et 12%)
-                        if (normalizedSpeed <= 0.12f) {
-                            fadeIn = Mth.clamp((normalizedSpeed - 0.10f) / 0.02f, 0.0f, 1.0f);
+                        if (normalizedSpeed <= 0.17f) {
+                            fadeIn = Mth.clamp((normalizedSpeed - 0.15f) / 0.02f, 0.0f, 1.0f);
                         }
 
                         // Fade Out progressif sur les derniers 15% (entre 15% et 30%)
-                        if (normalizedSpeed > 0.15f) {
-                            fadeOut = Mth.clamp(1.0f - ((normalizedSpeed - 0.15f) / 0.05f), 0.0f, 1.0f);
+                        if (normalizedSpeed > 0.18f) {
+                            fadeOut = Mth.clamp(1.0f - ((normalizedSpeed - 0.18f) / 0.05f), 0.0f, 1.0f);
                         }
 
                         // CORRECTION : On applique le fadeIn ET le fadeOut au calcul du volume final
-                        float start2Volume = Mth.clamp(fadeIn * fadeOut * 2.5f * userVolume, 0.0f, 2.5f);
+                        float start2Volume = Mth.clamp(fadeIn * fadeOut * 1.5f * userVolume, 0.0f, 1.5f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -205,11 +208,37 @@ public abstract class CarriageSoundsMixin {
                                 finalMxVol, 1.0f + pitchJitter, false);
                     }
                 }
+
+                // --------------------------------------------------
+                // 💨 EFFET DE VENT AÉRODYNAMIQUE (Pour tous les trains)
+                // Le vent commence à se faire entendre à 30% de la vitesse max
+                if (normalizedSpeed > 0.05f) {
+
+                    // Calcul de la montée en puissance (de 0.0 à 1.0 sur la plage 30% -> 100%)
+                    float windFadeIn = (normalizedSpeed - 0.05f) / 0.95f;
+
+                    // Le volume augmente exponentiellement avec la vitesse (pour simuler la
+                    // pression de l'air)
+                    float windVolumeCurve = (float) Math.pow(windFadeIn, 0.9);
+                    float windVolume = Mth.clamp(windVolumeCurve * 1.5f * userVolume, 0.0f, 1.5f);
+
+                    // Le pitch monte très légèrement pour simuler l'air qui siffle plus vite
+                    // On y ajoute notre fameux pitchJitter pour éviter tout effet de
+                    // wobble/robotique !
+                    float windPitch = Mth.lerp(windFadeIn, 0.8f, 1.2f) + pitchJitter;
+
+                    world.playLocalSound(
+                            soundLocation.x, soundLocation.y, soundLocation.z,
+                            Trainsounds.WIND_SOUND_EVENT.get(), SoundSource.NEUTRAL,
+                            windVolume,
+                            windPitch,
+                            false);
+                }
             }
 
             if ((pulseTime + phaseOffset) % 9 == 0) {
 
-                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.02f;
+                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.01f;
 
                 float actualBaseVol = baseVolume * 1.9f * currentMuffle;
 
@@ -362,12 +391,12 @@ public abstract class CarriageSoundsMixin {
         // =================================================================
         if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
             // Le son démarre à 1.0x (votre audio rabaissé)
-            float pitchStart = 0.80f;
+            float pitchStart = 0.30f;
 
             // Le son monte jusqu'à 1.78x (pour annuler les -10 demi-tons)
             // Si vous trouvez que ça monte trop haut, vous pouvez baisser cette valeur (ex:
             // 1.50f)
-            float pitchEnd = 1.78f;
+            float pitchEnd = 1.40f;
 
             // On utilise une courbe exponentielle légère pour que la montée soit naturelle
             float curvedSpeed = (float) Math.pow(normalizedSpeed, 0.70f);
@@ -375,7 +404,7 @@ public abstract class CarriageSoundsMixin {
             float finalMxPitch = Mth.lerp(curvedSpeed, pitchStart, pitchEnd);
 
             // On s'assure de ne pas dépasser le maximum de Minecraft (2.0f)
-            return Mth.clamp(basePitch * finalMxPitch, 0.5f, 2.0f);
+            return Mth.clamp(basePitch * finalMxPitch, 0.3f, 2.0f);
         }
 
         // =================================================================

@@ -58,5 +58,15 @@
         "attenuation_distance": 64
       }
     ]
+  },
+  "train_wind": {
+    "sounds": [
+      {
+        "name": "trainsounds:train_wind",
+        "type": "file",
+        "stream": false,
+        "attenuation_distance": 64
+      }
+    ]
   }
 }
