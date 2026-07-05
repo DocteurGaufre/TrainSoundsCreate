@@ -6,14 +6,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -26,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@EventBusSubscriber(modid = Trainsounds.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Trainsounds.MOD_ID)
 public final class TrainEngineToggleHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("TrainSounds/Toggle");
@@ -61,7 +59,7 @@ public final class TrainEngineToggleHandler {
             return;
         }
 
-        if (!(carriageEntity instanceof EngineToggleCarrier carrier)) {
+        if (!(carriageEntity instanceof EngineToggleCarrier)) {
             logBoundary("FINISH", "use_entity", player, world, "result=PASS, reason=carrier_mixin_missing");
             return;
         }
@@ -76,8 +74,8 @@ public final class TrainEngineToggleHandler {
                 "use_entity",
                 player,
                 world,
-                "result=CONSUME (GUI opened on client), entity=" + carriageEntity.getUUID() + ", carriage_index=" + carriageEntity.carriageIndex
-        );
+                "result=CONSUME (GUI opened on client), entity=" + carriageEntity.getUUID() + ", carriage_index="
+                        + carriageEntity.carriageIndex);
         event.setCancellationResult(InteractionResult.CONSUME);
         event.setCanceled(true);
     }
@@ -106,7 +104,7 @@ public final class TrainEngineToggleHandler {
             return;
         }
 
-        if (!(target instanceof EngineToggleCarrier carrier)) {
+        if (!(target instanceof EngineToggleCarrier)) {
             player.displayClientMessage(Component.literal("Carriage engine state mixin missing."), true);
             logBoundary("FINISH", "use_item", player, world, "result=CONSUME, reason=carrier_mixin_missing");
             event.setCancellationResult(InteractionResult.CONSUME);
@@ -130,39 +128,10 @@ public final class TrainEngineToggleHandler {
                 "use_item",
                 player,
                 world,
-                "result=CONSUME (sent GUI open packet), entity=" + target.getUUID() + ", carriage_index=" + target.carriageIndex
-        );
+                "result=CONSUME (sent GUI open packet), entity=" + target.getUUID() + ", carriage_index="
+                        + target.carriageIndex);
         event.setCancellationResult(InteractionResult.CONSUME);
         event.setCanceled(true);
-    }
-
-    private static void toggleCarriageEngine(Player player, CarriageContraptionEntity carriageEntity, EngineToggleCarrier carrier) {
-        boolean before = carrier.trainsounds$isEngineBuiltIn();
-        LOGGER.info(
-                "{} toggle_engine START {} player={} entity={} carriage_index={} state_before={}",
-                DEBUG_SEPARATOR,
-                DEBUG_SEPARATOR,
-                player.getUUID(),
-                carriageEntity.getUUID(),
-                carriageEntity.carriageIndex,
-                before
-        );
-        carrier.trainsounds$toggleEngineBuiltIn();
-        boolean enabled = carrier.trainsounds$isEngineBuiltIn();
-        int carriageDisplayIndex = carriageEntity.carriageIndex + 1;
-        LOGGER.info(
-                "{} toggle_engine FINISH {} player={} entity={} carriage_index={} state_after={}",
-                DEBUG_SEPARATOR,
-                DEBUG_SEPARATOR,
-                player.getUUID(),
-                carriageEntity.getUUID(),
-                carriageEntity.carriageIndex,
-                enabled
-        );
-        player.displayClientMessage(Component.translatable(
-                enabled ? "message.trainsounds.engine_on" : "message.trainsounds.engine_off",
-                carriageDisplayIndex
-        ), true);
     }
 
     private static CarriageContraptionEntity findCarriageInFront(Player player, Level world, double maxDistance) {
@@ -174,8 +143,7 @@ public final class TrainEngineToggleHandler {
         List<CarriageContraptionEntity> candidates = world.getEntitiesOfClass(
                 CarriageContraptionEntity.class,
                 searchBox,
-                entity -> entity != null && entity.isAlive()
-        );
+                entity -> entity != null && entity.isAlive());
 
         return candidates.stream()
                 .filter(entity -> {
@@ -191,13 +159,15 @@ public final class TrainEngineToggleHandler {
                 .orElse(null);
     }
 
-    private static boolean isDuplicateToggle(Player player, Level world, CarriageContraptionEntity target, String source) {
+    private static boolean isDuplicateToggle(Player player, Level world, CarriageContraptionEntity target,
+            String source) {
         long now = world.getGameTime();
         UUID playerId = player.getUUID();
         UUID targetId = target.getUUID();
 
         ToggleAttempt previous = LAST_TOGGLE_ATTEMPT.put(playerId, new ToggleAttempt(now, targetId, source));
-        boolean duplicate = previous != null && previous.tick == now && previous.targetId != null && previous.targetId.equals(targetId);
+        boolean duplicate = previous != null && previous.tick == now && previous.targetId != null
+                && previous.targetId.equals(targetId);
 
         LOGGER.info(
                 "{} duplicate_check {} player={} tick={} source={} target={} duplicate={} previous_tick={} previous_target={} previous_source={}",
@@ -210,8 +180,7 @@ public final class TrainEngineToggleHandler {
                 duplicate,
                 previous != null ? previous.tick : null,
                 previous != null ? previous.targetId : null,
-                previous != null ? previous.source : null
-        );
+                previous != null ? previous.source : null);
 
         return duplicate;
     }
@@ -226,7 +195,6 @@ public final class TrainEngineToggleHandler {
                 world.getGameTime(),
                 world.isClientSide ? "client" : "server",
                 details,
-                DEBUG_SEPARATOR
-        );
+                DEBUG_SEPARATOR);
     }
 }

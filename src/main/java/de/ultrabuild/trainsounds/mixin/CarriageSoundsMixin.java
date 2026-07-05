@@ -98,13 +98,13 @@ public abstract class CarriageSoundsMixin {
 
         // --- Profil M7 (Électrique) ---
         if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.10f) {
+            if (normalizedSpeed <= 0.15f) {
                 // De 0% à 15% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.60f) {
                 // De 15% à 60% : Le son de base monte de 0% à 100%
                 // La plage de montée dure maintenant 45% (0.60 - 0.15)
-                float unMuffleProgress = (normalizedSpeed - 0.10f) / 0.50f;
+                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.45f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -159,25 +159,19 @@ public abstract class CarriageSoundsMixin {
                     // Son 2 : Grave (15% à 30%)
                     if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.30f) {
                         float fadeOut = 1.0f;
-                        float fadeIn = 1.0f;
 
-                        // NOUVEAU : Fade In progressif sur les 2 premiers % (entre 10% et 12%)
-                        if (normalizedSpeed <= 0.17f) {
-                            fadeIn = Mth.clamp((normalizedSpeed - 0.15f) / 0.02f, 0.0f, 1.0f);
+                        // Fade Out progressif, long et doux (de 20% à 30%) -> Plage de 0.10
+                        if (normalizedSpeed > 0.20f) {
+                            fadeOut = 1.0f - ((normalizedSpeed - 0.20f) / 0.10f);
                         }
 
-                        // Fade Out progressif sur les derniers 15% (entre 15% et 30%)
-                        if (normalizedSpeed > 0.18f) {
-                            fadeOut = Mth.clamp(1.0f - ((normalizedSpeed - 0.18f) / 0.05f), 0.0f, 1.0f);
-                        }
-
-                        // CORRECTION : On applique le fadeIn ET le fadeOut au calcul du volume final
-                        float start2Volume = Mth.clamp(fadeIn * fadeOut * 1.5f * userVolume, 0.0f, 1.5f);
+                        // Le volume démarre directement au maximum (1.5) et ne subit que le Fade Out
+                        float start2Volume = Mth.clamp(fadeOut * 1.5f * userVolume, 0.0f, 1.5f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
                                 Trainsounds.M7_START2_SOUND_EVENT.get(), SoundSource.NEUTRAL,
-                                start2Volume, 1.0f + pitchJitter, false);
+                                start2Volume, 1.0f, false);
                     }
                 }
 
