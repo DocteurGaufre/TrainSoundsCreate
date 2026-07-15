@@ -253,22 +253,26 @@ public abstract class CarriageSoundsMixin {
             return;
         }
 
-        if ((pulseTime + phaseOffset) % 6 == 0) {
-            float actualIdleVol = 0.5f * userVolume * currentMuffle;
-
-            // NOUVEAU : On applique la même logique d'économie de ressources ici
-            if (actualIdleVol > 0.0f) {
-                world.playLocalSound(
-                        soundLocation.x,
-                        soundLocation.y,
-                        soundLocation.z,
-                        selectedSound,
-                        SoundSource.NEUTRAL,
-                        actualIdleVol,
-                        0.45f,
-                        false);
-            }
-        }
+        // ==================================================
+        // 🔇 SON À L'ARRÊT (IDLE) - DÉSACTIVÉ
+        // ==================================================
+        /*
+         * if ((pulseTime + phaseOffset) % 6 == 0) {
+         * float actualIdleVol = 0.5f * userVolume * currentMuffle;
+         *
+         * if (actualIdleVol > 0.0f) {
+         * world.playLocalSound(
+         * soundLocation.x,
+         * soundLocation.y,
+         * soundLocation.z,
+         * selectedSound,
+         * SoundSource.NEUTRAL,
+         * actualIdleVol,
+         * 0.45f,
+         * false);
+         * }
+         * }
+         */
     }
 
     @Unique

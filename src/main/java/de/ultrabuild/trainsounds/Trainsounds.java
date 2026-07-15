@@ -49,6 +49,14 @@ public class Trainsounds {
                         "train_wind",
                         () -> SoundEvent.createVariableRangeEvent(
                                         ResourceLocation.fromNamespaceAndPath(MOD_ID, "train_wind")));
+        public static final java.util.function.Supplier<SoundEvent> CURVE_SOUND_EVENT = SOUND_EVENTS.register(
+                        "train_curve",
+                        () -> SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath(MOD_ID, "train_curve")));
+        public static final java.util.function.Supplier<SoundEvent> SWITCH_SOUND_EVENT = SOUND_EVENTS.register(
+                        "train_switch",
+                        () -> SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath(MOD_ID, "train_switch")));
 
         public static final java.util.function.Supplier<Item> ENGINE_TOGGLE_ITEM = ITEMS.register("engine_toggle_tool",
                         () -> new EngineToggleItem(new Item.Properties().stacksTo(1)));
