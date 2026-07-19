@@ -221,6 +221,34 @@ public abstract class CarriageSoundsMixin {
                 }
 
                 // --------------------------------------------------
+                // Sons additionnels M6
+                if (selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get()) {
+
+                    // Son M6 1 : De 0% à 25%
+                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.25f) {
+                        float m6StartVolume = 1.0f;
+
+                        // Fade In progressif de 0% à 5%
+                        if (normalizedSpeed <= 0.05f) {
+                            m6StartVolume = normalizedSpeed / 0.05f;
+                        }
+
+                        // Fade Out progressif de 10% à 25%
+                        if (normalizedSpeed > 0.10f) {
+                            m6StartVolume = 1.0f - ((normalizedSpeed - 0.10f) / 0.15f);
+                        }
+
+                        // Application du volume final
+                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.5f * userVolume, 0.0f, 1.5f);
+
+                        world.playLocalSound(
+                                soundLocation.x, soundLocation.y, soundLocation.z,
+                                Trainsounds.M6_START1_SOUND_EVENT.get(), SoundSource.NEUTRAL,
+                                finalM6Vol, 1.0f + pitchJitter, false);
+                    }
+                }
+
+                // --------------------------------------------------
                 // Sons additionnels MX
                 if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
 
@@ -341,34 +369,6 @@ public abstract class CarriageSoundsMixin {
         // Keep compatibility with setups where the carrier mixin is temporarily
         // unavailable.
         return true;
-    }
-
-    @Unique
-    private boolean trainsounds$hasLivePantographContact(CarriageContraptionEntity carriageEntity) {
-        return true;
-    }
-
-    @Unique
-    private boolean trainsounds$hasLivePantographOnTrain(CarriageContraptionEntity carriageEntity) {
-        Carriage carriage = carriageEntity.getCarriage();
-        Level world = carriageEntity.level();
-        if (carriage == null || carriage.train == null || world == null) {
-            return trainsounds$hasLivePantographContact(carriageEntity);
-        }
-
-        for (CarriageContraptionEntity candidate : world.getEntitiesOfClass(
-                CarriageContraptionEntity.class,
-                carriageEntity.getBoundingBox().inflate(512.0d),
-                e -> e != null
-                        && e.isAlive()
-                        && e.getCarriage() != null
-                        && e.getCarriage().train == carriage.train)) {
-            if (trainsounds$hasLivePantographContact(candidate)) {
-                return true;
-            }
-        }
-
-        return trainsounds$hasLivePantographContact(carriageEntity);
     }
 
     @Unique

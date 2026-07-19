@@ -60,8 +60,8 @@ public abstract class TrainMixin {
             // sa vitesse)
             physicsModifier = Math.max(0.40, 1.0 - Math.pow(speedRatio, 1.5));
         } else {
-            // Freinage adouci de 30%
-            physicsModifier = 0.7;
+            // Freinage adouci
+            physicsModifier = 0.58;
         }
 
         double appliedAcceleration = baseAcceleration * accelerationMod * physicsModifier;

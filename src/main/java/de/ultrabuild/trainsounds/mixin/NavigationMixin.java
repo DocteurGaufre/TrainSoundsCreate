@@ -16,6 +16,6 @@ public abstract class NavigationMixin {
         // TrainMixin,
         // nous devons diviser l'accélération perçue par l'IA par 0.7.
         // Cela va forcer la variable 'brakingDistance' à doubler mathématiquement !
-        return originalAcceleration * 0.7;
+        return originalAcceleration * 0.58;
     }
 }
