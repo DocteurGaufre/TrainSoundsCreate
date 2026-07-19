@@ -13,14 +13,16 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.WeakHashMap;
 
 @EventBusSubscriber(modid = Trainsounds.MOD_ID, value = Dist.CLIENT)
 public class TrainCurveSoundHandler {
 
-    private static final Map<UUID, CurveSquealSoundInstance> ACTIVE_SQUEALS = new HashMap<>();
+    // MÉMOIRE PAR WAGON : Utilisation d'une WeakHashMap.
+    // Si un wagon est détruit ou déchargé, Java nettoie la mémoire automatiquement
+    // !
+    private static final Map<Carriage, CurveSquealSoundInstance> ACTIVE_SQUEALS = new WeakHashMap<>();
 
     private static boolean isHorizontalCurve(TrackEdge edge) {
         if (edge == null || !edge.isTurn())
@@ -41,38 +43,31 @@ public class TrainCurveSoundHandler {
         if (mc.isPaused() || mc.level == null || mc.player == null)
             return;
 
-        Vec3 playerPos = mc.player.position();
-
         for (Train train : Create.RAILWAYS.trains.values()) {
             if (train.carriages.isEmpty())
                 continue;
 
-            boolean isTrainInCurve = false;
+            // Si le train est à l'arrêt ou presque, on ignore tous ses wagons
+            // (Optimisation)
+            if (Math.abs(train.speed) < 0.05)
+                continue;
 
-            // On cherche UNIQUEMENT la position la plus proche du joueur
-            Vec3 closestAnyPos = null;
-            double minAnyDist = Double.MAX_VALUE;
-
+            // ==========================================
+            // ANALYSE INDÉPENDANTE DE CHAQUE WAGON
+            // ==========================================
             for (Carriage carriage : train.carriages) {
+
+                boolean isCarriageInCurve = false;
+                Vec3 carriagePos = null;
 
                 // --- VÉRIFICATION DU BOGIE AVANT ---
                 CarriageBogey leadingBogey = carriage.leadingBogey();
                 if (leadingBogey != null) {
-                    // Est-ce que cette roue crisse ?
                     if (isHorizontalCurve(leadingBogey.leading().edge)
                             || isHorizontalCurve(leadingBogey.trailing().edge)) {
-                        isTrainInCurve = true;
+                        isCarriageInCurve = true;
                     }
-
-                    // Où est cette roue par rapport au joueur ?
-                    Vec3 pos = leadingBogey.getAnchorPosition();
-                    if (pos != null) {
-                        double dist = pos.distanceToSqr(playerPos);
-                        if (dist < minAnyDist) {
-                            minAnyDist = dist;
-                            closestAnyPos = pos;
-                        }
-                    }
+                    carriagePos = leadingBogey.getAnchorPosition();
                 }
 
                 // --- VÉRIFICATION DU BOGIE ARRIÈRE ---
@@ -81,41 +76,40 @@ public class TrainCurveSoundHandler {
                     if (trailingBogey != null) {
                         if (isHorizontalCurve(trailingBogey.leading().edge)
                                 || isHorizontalCurve(trailingBogey.trailing().edge)) {
-                            isTrainInCurve = true;
+                            isCarriageInCurve = true;
                         }
 
-                        Vec3 pos = trailingBogey.getAnchorPosition();
-                        if (pos != null) {
-                            double dist = pos.distanceToSqr(playerPos);
-                            if (dist < minAnyDist) {
-                                minAnyDist = dist;
-                                closestAnyPos = pos;
+                        // On place le son au centre exact du wagon
+                        Vec3 trailingPos = trailingBogey.getAnchorPosition();
+                        if (trailingPos != null) {
+                            if (carriagePos != null) {
+                                carriagePos = carriagePos.add(trailingPos).scale(0.5);
+                            } else {
+                                carriagePos = trailingPos;
                             }
                         }
                     }
                 }
-            }
 
-            // CORRECTION ULTIME : Le son est TOUJOURS accroché à la partie du train la plus
-            // proche.
-            // Il ne fera plus jamais de téléportation, ce qui supprime les pics de volume
-            // et les coupures !
-            Vec3 trainLocation = closestAnyPos;
+                // ==========================================
+                // GESTION DU SON (Attaché au wagon)
+                // ==========================================
+                CurveSquealSoundInstance squeal = ACTIVE_SQUEALS.get(carriage);
 
-            CurveSquealSoundInstance squeal = ACTIVE_SQUEALS.get(train.id);
+                if (isCarriageInCurve && squeal == null && carriagePos != null) {
+                    squeal = new CurveSquealSoundInstance(Trainsounds.CURVE_SOUND_EVENT.get(), carriagePos);
+                    squeal.updateState(isCarriageInCurve, train.speed, carriagePos);
+                    Minecraft.getInstance().getSoundManager().play(squeal);
+                    ACTIVE_SQUEALS.put(carriage, squeal);
+                }
 
-            if (isTrainInCurve && Math.abs(train.speed) > 0.05 && squeal == null && trainLocation != null) {
-                squeal = new CurveSquealSoundInstance(Trainsounds.CURVE_SOUND_EVENT.get(), trainLocation);
-                squeal.updateState(isTrainInCurve, train.speed, trainLocation);
-                Minecraft.getInstance().getSoundManager().play(squeal);
-                ACTIVE_SQUEALS.put(train.id, squeal);
-            }
+                if (squeal != null) {
+                    // Le son voyage en permanence avec son wagon !
+                    squeal.updateState(isCarriageInCurve, train.speed, carriagePos);
 
-            if (squeal != null) {
-                squeal.updateState(isTrainInCurve, train.speed, trainLocation);
-
-                if (squeal.isStopped() || squeal.canBeRemoved()) {
-                    ACTIVE_SQUEALS.remove(train.id);
+                    if (squeal.isStopped() || squeal.canBeRemoved()) {
+                        ACTIVE_SQUEALS.remove(carriage);
+                    }
                 }
             }
         }

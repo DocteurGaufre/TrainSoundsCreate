@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "CarriageSoundsMixin",
-    "CarriageContraptionEntityMixin"
+    "CarriageContraptionEntityMixin",
+    "TrainMixin",
+    "NavigationMixin"
   ],
   "client": [
     "client.ScreenAccessor",

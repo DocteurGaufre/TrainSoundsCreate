@@ -21,6 +21,8 @@ public class CurveSquealSoundInstance extends AbstractTickableSoundInstance {
         this.x = initialLocation.x;
         this.y = initialLocation.y;
         this.z = initialLocation.z;
+        this.attenuation = SoundInstance.Attenuation.LINEAR;
+        this.relative = false;
     }
 
     public void updateState(boolean inCurve, double speed, Vec3 newLocation) {

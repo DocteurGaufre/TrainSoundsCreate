@@ -26,6 +26,9 @@ public abstract class CarriageSoundsMixin {
     @Shadow
     CarriageContraptionEntity entity;
 
+    @Unique
+    private double trainsounds$antiLagSpeed = 0.0;
+
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/AllSoundEvents$SoundEntry;playAt(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;FFZ)V"), remap = false)
     private void trainsounds$muteVanillaSteam(
             AllSoundEvents.SoundEntry soundEntry,
@@ -39,6 +42,32 @@ public abstract class CarriageSoundsMixin {
         }
 
         soundEntry.playAt(world, soundLocation, volume, pitch, fade);
+    }
+
+    // ==================================================
+    // 🔊 RENDRE LE SON DE ROULEMENT INDÉPENDANT PAR VOITURE
+    // ==================================================
+
+    @Shadow
+    public abstract void submitSharedSoundVolume(Vec3 location, float volume);
+
+    // 1. Intercepter l'envoi du son à la motrice pour l'appliquer à la voiture
+    // ACTUELLE
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/entity/CarriageSounds;submitSharedSoundVolume(Lnet/minecraft/world/phys/Vec3;F)V"), remap = false)
+    private void trainsounds$applySoundLocally(CarriageSounds leadCarriageSounds, Vec3 location, float volume) {
+        // On ignore 'leadCarriageSounds' (la motrice) sélectionnée par Create.
+        // On force la voiture actuelle ('this') à mettre à jour son propre haut-parleur
+        // local !
+        this.submitSharedSoundVolume(location, volume);
+    }
+
+    // 2. Empêcher Create de rendre les wagons arrière muets
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/entity/CarriageSounds;finalizeSharedVolume(F)V"), remap = false)
+    private void trainsounds$preventMute(CarriageSounds instance, float volume) {
+        // Dans le code de base, Create appelle cette méthode avec la valeur "0" pour
+        // rendre les wagons muets.
+        // En laissant cette méthode vide, on neutralise purement et simplement cet
+        // ordre de silence.
     }
 
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/animation/LerpedFloat;chase", ordinal = 3), index = 0, remap = false)
@@ -86,6 +115,22 @@ public abstract class CarriageSoundsMixin {
 
         Vec3 soundLocation = carriageEntity.position();
         double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
+
+        // ==================================================
+        // FILTRE ANTI-LAG (Amortisseur de vitesse)
+        // ==================================================
+        if (speedPerTick > this.trainsounds$antiLagSpeed) {
+            // Le train accélère, la donnée est fiable
+            this.trainsounds$antiLagSpeed = speedPerTick;
+        } else {
+            // Le jeu lag ou le train freine fort : on limite la chute
+            this.trainsounds$antiLagSpeed = Math.max(speedPerTick, this.trainsounds$antiLagSpeed - 0.015);
+        }
+        // On remplace la vitesse brute par la vitesse lissée pour la suite des calculs
+        speedPerTick = this.trainsounds$antiLagSpeed;
+        // ==================================================
+
+        // Tous ces calculs vont maintenant utiliser la vitesse lissée et protégée !
         float basePitch = trainsounds$dynamicPitchFromTrainSpeed(carriageEntity, 1.0f);
         float baseVolume = Mth.clamp((float) (speedPerTick * 18.0f), 0.20f, 2.5f) * userVolume;
 
@@ -171,7 +216,7 @@ public abstract class CarriageSoundsMixin {
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
                                 Trainsounds.M7_START2_SOUND_EVENT.get(), SoundSource.NEUTRAL,
-                                start2Volume, 1.0f, false);
+                                start2Volume, 1.0f + pitchJitter, false);
                     }
                 }
 

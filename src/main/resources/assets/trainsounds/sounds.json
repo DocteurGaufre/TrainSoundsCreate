@@ -85,7 +85,8 @@
     "sounds": [
       {
         "name": "trainsounds:train_curve",
-        "stream": true
+        "stream": true,
+        "attenuation_distance": 32
       }
     ]
   }
