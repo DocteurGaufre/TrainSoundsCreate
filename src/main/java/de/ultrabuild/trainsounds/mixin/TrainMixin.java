@@ -58,10 +58,10 @@ public abstract class TrainMixin {
             // P = 1.5 (Courbe de puissance qui correspond aux chronos de 0 à 70 km/h)
             // M = 0.40 (Le plancher qui s'active au moment où le train atteint 70% de
             // sa vitesse)
-            physicsModifier = Math.max(0.40, 1.0 - Math.pow(speedRatio, 1.5));
+            physicsModifier = Math.max(0.24, 1.0 - Math.pow(speedRatio, 0.75));
         } else {
             // Freinage adouci
-            physicsModifier = 0.58;
+            physicsModifier = 0.52;
         }
 
         double appliedAcceleration = baseAcceleration * accelerationMod * physicsModifier;

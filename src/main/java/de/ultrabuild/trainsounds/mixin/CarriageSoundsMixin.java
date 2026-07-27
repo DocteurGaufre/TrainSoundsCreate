@@ -117,11 +117,12 @@ public abstract class CarriageSoundsMixin {
         double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
 
         // ==================================================
-        // FILTRE ANTI-LAG (Amortisseur de vitesse)
+        // 🛡️ FILTRE ANTI-LAG (Amortisseur de vitesse Bidirectionnel)
         // ==================================================
         if (speedPerTick > this.trainsounds$antiLagSpeed) {
-            // Le train accélère, la donnée est fiable
-            this.trainsounds$antiLagSpeed = speedPerTick;
+            // Le train accélère : on bloque les hausses impossibles (téléportation / lag)
+            // On autorise une hausse maximale de 0.020 par tick.
+            this.trainsounds$antiLagSpeed = Math.min(speedPerTick, this.trainsounds$antiLagSpeed + 0.005);
         } else {
             // Le jeu lag ou le train freine fort : on limite la chute
             this.trainsounds$antiLagSpeed = Math.max(speedPerTick, this.trainsounds$antiLagSpeed - 0.015);
@@ -191,9 +192,9 @@ public abstract class CarriageSoundsMixin {
                 // Sons additionnels M7
                 if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
 
-                    // Son 1 : Aigu (0% à 15%)
-                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.15f) {
-                        float fadeIn = normalizedSpeed / 0.15f;
+                    // Son 1 : Aigu (0% à 20%)
+                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.20f) {
+                        float fadeIn = normalizedSpeed / 0.20f;
                         float start1Volume = Mth.clamp(fadeIn * 1.5f * userVolume, 0.1f, 1.5f);
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -201,13 +202,13 @@ public abstract class CarriageSoundsMixin {
                                 start1Volume, 1.0f + pitchJitter, false);
                     }
 
-                    // Son 2 : Grave (15% à 30%)
-                    if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.30f) {
+                    // Son 2 : Grave (20% à 35%)
+                    if (normalizedSpeed > 0.20f && normalizedSpeed <= 0.35f) {
                         float fadeOut = 1.0f;
 
-                        // Fade Out progressif, long et doux (de 20% à 30%) -> Plage de 0.10
-                        if (normalizedSpeed > 0.20f) {
-                            fadeOut = 1.0f - ((normalizedSpeed - 0.20f) / 0.10f);
+                        // Fade Out progressif, long et doux (de 25% à 35%) -> Plage de 0.15
+                        if (normalizedSpeed > 0.25f) {
+                            fadeOut = 1.0f - ((normalizedSpeed - 0.25f) / 0.15f);
                         }
 
                         // Le volume démarre directement au maximum (1.5) et ne subit que le Fade Out
@@ -239,7 +240,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.5f * userVolume, 0.0f, 1.5f);
+                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.2f * userVolume, 0.0f, 1.2f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,

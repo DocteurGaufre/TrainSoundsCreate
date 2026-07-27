@@ -25,14 +25,11 @@ import java.util.Map;
 
 public class CarriageManagementScreen extends Screen {
 
-    private static final int BLUEPRINT_COLOR = 0xFF4A90E2;
     private static final int BACKGROUND_COLOR = 0xFF1a1a2e;
 
     private final Screen parent;
     private final List<CarriageContraptionEntity> carriages;
     private int currentCarriageIndex = 0;
-    private Button prevButton;
-    private Button nextButton;
     private Button toggleButton;
 
     private int panelLeft;
@@ -67,16 +64,16 @@ public class CarriageManagementScreen extends Screen {
 
         int centerX = (panelLeft + panelRight) / 2;
 
-        // Previous button (left arrow)
-        prevButton = this.addRenderableWidget(Button.builder(Component.literal("◀"), button -> {
+        // Previous button (left arrow) - Assignation locale pour éviter l'avertissement
+        this.addRenderableWidget(Button.builder(Component.literal("◀"), button -> {
             if (currentCarriageIndex > 0) {
                 currentCarriageIndex--;
                 updateToggleButton();
             }
         }).bounds(panelLeft + 20, panelBottom - 50, 40, 20).build());
 
-        // Next button (right arrow)
-        nextButton = this.addRenderableWidget(Button.builder(Component.literal("▶"), button -> {
+        // Next button (right arrow) - Assignation locale pour éviter l'avertissement
+        this.addRenderableWidget(Button.builder(Component.literal("▶"), button -> {
             if (currentCarriageIndex < carriages.size() - 1) {
                 currentCarriageIndex++;
                 updateToggleButton();
@@ -100,7 +97,8 @@ public class CarriageManagementScreen extends Screen {
             CarriageContraptionEntity carriage = carriages.get(currentCarriageIndex);
             if (carriage instanceof EngineToggleCarrier carrier) {
                 boolean isEngineOn = carrier.trainsounds$isEngineBuiltIn();
-                Component text = isEngineOn ? Component.literal("Engine: ON").withStyle(net.minecraft.ChatFormatting.GREEN)
+                Component text = isEngineOn
+                        ? Component.literal("Engine: ON").withStyle(net.minecraft.ChatFormatting.GREEN)
                         : Component.literal("Engine: OFF").withStyle(net.minecraft.ChatFormatting.RED);
                 toggleButton.setMessage(text);
             }
@@ -143,7 +141,7 @@ public class CarriageManagementScreen extends Screen {
         // Draw train/carriage info
         if (!carriages.isEmpty()) {
             CarriageContraptionEntity currentCarriage = carriages.get(currentCarriageIndex);
-            
+
             // Train name at top of panel
             String trainName = "Train";
             if (currentCarriage.getCarriage() != null && currentCarriage.getCarriage().train != null) {
@@ -153,7 +151,8 @@ public class CarriageManagementScreen extends Screen {
             context.drawCenteredString(this.font, trainText, this.width / 2, panelTop + 10, 0xFFFFFF);
 
             // Carriage counter
-            Component carriageText = Component.literal("Carriage " + (currentCarriageIndex + 1) + " of " + carriages.size());
+            Component carriageText = Component
+                    .literal("Voiture " + (currentCarriageIndex + 1) + " sur " + carriages.size());
             context.drawCenteredString(this.font, carriageText, this.width / 2, panelBottom - 20, 0xAAAAAA);
 
             // Draw 3D carriage model in the center
@@ -183,19 +182,21 @@ public class CarriageManagementScreen extends Screen {
         int borderColor = 0xFF4A90E2;
 
         // Outer border
-        context.fill(x1 - 2, y1 - 2, x2 + 2, y1, borderColor);      // Top outer
-        context.fill(x1 - 2, y2, x2 + 2, y2 + 2, borderColor);      // Bottom outer
-        context.fill(x1 - 2, y1 - 2, x1, y2 + 2, borderColor);      // Left outer
-        context.fill(x2, y1 - 2, x2 + 2, y2 + 2, borderColor);      // Right outer
+        context.fill(x1 - 2, y1 - 2, x2 + 2, y1, borderColor); // Top outer
+        context.fill(x1 - 2, y2, x2 + 2, y2 + 2, borderColor); // Bottom outer
+        context.fill(x1 - 2, y1 - 2, x1, y2 + 2, borderColor); // Left outer
+        context.fill(x2, y1 - 2, x2 + 2, y2 + 2, borderColor); // Right outer
 
         // Inner border
-        context.fill(x1, y1, x2, y1 + 1, borderColor);              // Top inner
-        context.fill(x1, y2 - 1, x2, y2, borderColor);              // Bottom inner
-        context.fill(x1, y1, x1 + 1, y2, borderColor);              // Left inner
-        context.fill(x2 - 1, y1, x2, y2, borderColor);              // Right inner
+        context.fill(x1, y1, x2, y1 + 1, borderColor); // Top inner
+        context.fill(x1, y2 - 1, x2, y2, borderColor); // Bottom inner
+        context.fill(x1, y1, x1 + 1, y2, borderColor); // Left inner
+        context.fill(x2 - 1, y1, x2, y2, borderColor); // Right inner
     }
 
     private void drawCarriageModel(GuiGraphics context, int x, int y, CarriageContraptionEntity carriage, float delta) {
+        context.flush();
+
         context.pose().pushPose();
         context.pose().translate(x, y, 300);
 
@@ -207,30 +208,39 @@ public class CarriageManagementScreen extends Screen {
             RenderSystem.defaultBlendFunc();
 
             context.pose().pushPose();
-            
+
             // Apply scale
             context.pose().scale(modelScale, -modelScale, modelScale);
 
             // Apply rotation
             context.pose().mulPose(Axis.XP.rotationDegrees(modelRotationX));
             context.pose().mulPose(Axis.YP.rotationDegrees(modelRotationY));
-            
+
             // Render the blocks and block entities of the contraption
             assert this.minecraft != null;
             if (carriage.getContraption() != null) {
                 Contraption contraption = carriage.getContraption();
 
                 // Render blocks
-                for (Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo> entry : contraption.getBlocks().entrySet()) {
+                for (Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo> entry : contraption.getBlocks()
+                        .entrySet()) {
                     BlockPos localPos = entry.getKey();
                     StructureTemplate.StructureBlockInfo info = entry.getValue();
                     BlockState blockState = info.state();
 
                     context.pose().pushPose();
                     context.pose().translate(localPos.getX(), localPos.getY(), localPos.getZ());
-                    this.minecraft.getBlockRenderer().renderSingleBlock(blockState, context.pose(), context.bufferSource(),
-                        LightTexture.FULL_BRIGHT,
-                        net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY);
+
+                    // CORRECTION 1.21.1 : Ajout de ModelData.EMPTY et null pour le RenderType
+                    this.minecraft.getBlockRenderer().renderSingleBlock(
+                            blockState,
+                            context.pose(),
+                            context.bufferSource(),
+                            LightTexture.FULL_BRIGHT,
+                            net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,
+                            net.neoforged.neoforge.client.model.data.ModelData.EMPTY,
+                            null);
+
                     context.pose().popPose();
                 }
 
@@ -243,8 +253,8 @@ public class CarriageManagementScreen extends Screen {
                             context.pose().pushPose();
                             context.pose().translate(localPos.getX(), localPos.getY(), localPos.getZ());
                             renderer.render(blockEntity, delta, context.pose(), context.bufferSource(),
-                                LightTexture.FULL_BRIGHT,
-                                net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY);
+                                    LightTexture.FULL_BRIGHT,
+                                    net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY);
                             context.pose().popPose();
                         }
                     }
@@ -254,13 +264,13 @@ public class CarriageManagementScreen extends Screen {
             // Render the entity (this includes bogeys in CarriageContraptionEntity)
             EntityRenderDispatcher dispatcher = this.minecraft.getEntityRenderDispatcher();
             dispatcher.render(carriage, 0, 0, 0, 0, delta, context.pose(),
-                context.bufferSource(), LightTexture.FULL_BRIGHT);
+                    context.bufferSource(), LightTexture.FULL_BRIGHT);
 
             context.pose().popPose();
-            
+
             // Flush all rendering
             context.bufferSource().endBatch();
-            
+
             // Restore rendering state
             com.mojang.blaze3d.platform.Lighting.setupFor3DItems();
             RenderSystem.disableCull();
@@ -270,7 +280,8 @@ public class CarriageManagementScreen extends Screen {
             // Ultimate fallback - show indicator text
             try {
                 context.drawCenteredString(this.font,
-                    Component.literal("[Carriage Preview]").withStyle(net.minecraft.ChatFormatting.GRAY), 0, 0, 0xAAAAAA);
+                        Component.literal("[Carriage Preview]").withStyle(net.minecraft.ChatFormatting.GRAY), 0, 0,
+                        0xAAAAAA);
             } catch (Exception ignored) {
             }
         }
@@ -325,7 +336,6 @@ public class CarriageManagementScreen extends Screen {
             this.minecraft.setScreen(parent);
         }
     }
-
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
