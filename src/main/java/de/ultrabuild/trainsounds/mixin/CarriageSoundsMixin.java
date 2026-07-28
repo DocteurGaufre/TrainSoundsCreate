@@ -29,6 +29,9 @@ public abstract class CarriageSoundsMixin {
     @Unique
     private double trainsounds$antiLagSpeed = 0.0;
 
+    @Unique
+    private long trainsounds$lastTickTime = 0;
+
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/AllSoundEvents$SoundEntry;playAt(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;FFZ)V"), remap = false)
     private void trainsounds$muteVanillaSteam(
             AllSoundEvents.SoundEntry soundEntry,
@@ -114,25 +117,40 @@ public abstract class CarriageSoundsMixin {
         // ----------------------------------------
 
         Vec3 soundLocation = carriageEntity.position();
-        double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
+
+        double rawSpeedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
 
         // ==================================================
-        // 🛡️ FILTRE ANTI-LAG (Amortisseur de vitesse Bidirectionnel)
+        // 🛡️ FILTRE ANTI-LAG ULTIME (Anti-Catchup Temporel)
         // ==================================================
-        if (speedPerTick > this.trainsounds$antiLagSpeed) {
-            // Le train accélère : on bloque les hausses impossibles (téléportation / lag)
-            // On autorise une hausse maximale de 0.020 par tick.
-            this.trainsounds$antiLagSpeed = Math.min(speedPerTick, this.trainsounds$antiLagSpeed + 0.005);
-        } else {
-            // Le jeu lag ou le train freine fort : on limite la chute
-            this.trainsounds$antiLagSpeed = Math.max(speedPerTick, this.trainsounds$antiLagSpeed - 0.015);
+        long currentTime = System.currentTimeMillis();
+
+        // Un tick normal prend 50ms. Si ce tick s'exécute moins de 25ms après le
+        // précédent,
+        // c'est que le jeu décharge un "Lag Spike" et rattrape son retard en rafale !
+        boolean isCatchingUp = (currentTime - this.trainsounds$lastTickTime) < 25;
+        this.trainsounds$lastTickTime = currentTime;
+
+        if (!isCatchingUp) {
+            if (rawSpeedPerTick > this.trainsounds$antiLagSpeed) {
+                // Tolérance de 0.005 par tick (accélération maximale physique)
+                this.trainsounds$antiLagSpeed = Math.min(rawSpeedPerTick, this.trainsounds$antiLagSpeed + 0.005);
+            } else {
+                // Tolérance de 0.015 pour la décélération / freinage
+                this.trainsounds$antiLagSpeed = Math.max(rawSpeedPerTick, this.trainsounds$antiLagSpeed - 0.015);
+            }
         }
-        // On remplace la vitesse brute par la vitesse lissée pour la suite des calculs
-        speedPerTick = this.trainsounds$antiLagSpeed;
+        // Si isCatchingUp est VRAI, le filtre est ignoré. La variable antiLagSpeed
+        // reste
+        // figée à sa dernière valeur saine. Le son ne bougera pas d'un cheveu pendant
+        // le freeze !
+
+        // On passe la variable sécurisée pour la suite
+        double speedPerTick = this.trainsounds$antiLagSpeed;
         // ==================================================
 
         // Tous ces calculs vont maintenant utiliser la vitesse lissée et protégée !
-        float basePitch = trainsounds$dynamicPitchFromTrainSpeed(carriageEntity, 1.0f);
+        float basePitch = trainsounds$dynamicPitchFromTrainSpeed(carriageEntity, speedPerTick, 1.0f);
         float baseVolume = Mth.clamp((float) (speedPerTick * 18.0f), 0.20f, 2.5f) * userVolume;
 
         float maxSpeedPerTick = Math.max(carriageEntity.getCarriage().train.maxSpeed(), 0.001f);
@@ -240,7 +258,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.2f * userVolume, 0.0f, 1.2f);
+                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.4f * userVolume, 0.0f, 1.4f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -416,8 +434,10 @@ public abstract class CarriageSoundsMixin {
     }
 
     @Unique
-    private float trainsounds$dynamicPitchFromTrainSpeed(CarriageContraptionEntity carriageEntity, float basePitch) {
-        double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
+    private float trainsounds$dynamicPitchFromTrainSpeed(CarriageContraptionEntity carriageEntity, double filteredSpeed,
+            float basePitch) {
+        // double speedPerTick = trainsounds$getTrainSpeedPerTick(carriageEntity);
+
         if (carriageEntity.getCarriage() == null || carriageEntity.getCarriage().train == null) {
             return Mth.clamp(basePitch, 0.5f, 2.0f);
         }
@@ -427,8 +447,8 @@ public abstract class CarriageSoundsMixin {
 
         float maxSpeedPerTick = Math.max(carriageEntity.getCarriage().train.maxSpeed(), 0.001f);
 
-        // Pourcentage de vitesse (0.0 à 1.0)
-        float normalizedSpeed = Mth.clamp((float) (speedPerTick / maxSpeedPerTick), 0.0f, 1.0f);
+        // ✅ MODIFIÉ : On utilise "filteredSpeed" (la vitesse lissée par notre anti-lag)
+        float normalizedSpeed = Mth.clamp((float) (filteredSpeed / maxSpeedPerTick), 0.0f, 1.0f);
 
         // =================================================================
         // 🎛️ CALCUL DU PITCH SPÉCIFIQUE À LA RAME MX (DEFAULT_SOUND_EVENT)
@@ -438,8 +458,6 @@ public abstract class CarriageSoundsMixin {
             float pitchStart = 0.30f;
 
             // Le son monte jusqu'à 1.78x (pour annuler les -10 demi-tons)
-            // Si vous trouvez que ça monte trop haut, vous pouvez baisser cette valeur (ex:
-            // 1.50f)
             float pitchEnd = 1.40f;
 
             // On utilise une courbe exponentielle légère pour que la montée soit naturelle
