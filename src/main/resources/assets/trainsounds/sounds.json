@@ -85,7 +85,7 @@
         "name": "trainsounds:train_switch",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 32
+        "attenuation_distance": 48
       }
     ]
   },
@@ -97,6 +97,638 @@
         "name": "trainsounds:train_curve",
         "stream": true,
         "attenuation_distance": 32
+      }
+    ]
+  },
+  "stockel": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/stockel",
+        "stream": true
+      }
+    ]
+  },
+  "crainhem": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/crainhem",
+        "stream": true
+      }
+    ]
+  },
+  "alma": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/alma",
+        "stream": true
+      }
+    ]
+  },
+  "vandervelde": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/vandervelde",
+        "stream": true
+      }
+    ]
+  },
+  "roodebeek": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/roodebeek",
+        "stream": true
+      }
+    ]
+  },
+  "tomberg": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/tomberg",
+        "stream": true
+      }
+    ]
+  },
+  "gribaumont": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/gribaumont",
+        "stream": true
+      }
+    ]
+  },
+  "josephine_charlotte": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/josephine_charlotte",
+        "stream": true
+      }
+    ]
+  },
+  "montgomery": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/montgomery",
+        "stream": true
+      }
+    ]
+  },
+  "merode": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/merode",
+        "stream": true
+      }
+    ]
+  },
+  "merode1": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/merode1",
+        "stream": true
+      }
+    ]
+  },
+  "merode5": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/merode5",
+        "stream": true
+      }
+    ]
+  },
+  "schuman": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/schuman",
+        "stream": true
+      }
+    ]
+  },
+  "maelbeek": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/maelbeek",
+        "stream": true
+      }
+    ]
+  },
+  "arts_loi15": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/arts_loi15",
+        "stream": true
+      }
+    ]
+  },
+  "parc": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/parc",
+        "stream": true
+      }
+    ]
+  },
+  "gare_centrale": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/gare_centrale",
+        "stream": true
+      }
+    ]
+  },
+  "de_brouckere15": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/de_brouckere15",
+        "stream": true
+      }
+    ]
+  },
+  "sainte_catherine": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/sainte_catherine",
+        "stream": true
+      }
+    ]
+  },
+  "comte_de_flandre": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/comte_de_flandre",
+        "stream": true
+      }
+    ]
+  },
+  "etangs_noirs": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/etangs_noirs",
+        "stream": true
+      }
+    ]
+  },
+  "beekkant": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/beekkant",
+        "stream": true
+      }
+    ]
+  },
+  "gare_de_ouest": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/gare_de_ouest",
+        "stream": true
+      }
+    ]
+  },
+  "jacques_brel": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/jacques_brel",
+        "stream": true
+      }
+    ]
+  },
+  "aumale": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/aumale",
+        "stream": true
+      }
+    ]
+  },
+  "saint_guidon": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/saint_guidon",
+        "stream": true
+      }
+    ]
+  },
+  "veeweyde": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/veeweyde",
+        "stream": true
+      }
+    ]
+  },
+  "bizet": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/bizet",
+        "stream": true
+      }
+    ]
+  },
+  "la_roue": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/la_roue",
+        "stream": true
+      }
+    ]
+  },
+  "ceria": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/ceria",
+        "stream": true
+      }
+    ]
+  },
+  "edde_merckx": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/eddie_merckx",
+        "stream": true
+      }
+    ]
+  },
+  "erasme": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/erasme",
+        "stream": true
+      }
+    ]
+  },
+  "thieffry": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/thieffry",
+        "stream": true
+      }
+    ]
+  },
+  "petillon": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/petillon",
+        "stream": true
+      }
+    ]
+  },
+  "hankar": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/hankar",
+        "stream": true
+      }
+    ] 
+  },
+  "delta": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/delta",
+        "stream": true
+      }
+    ]
+  },
+  "beaulieu": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/beaulieu",
+        "stream": true
+      }
+    ]
+  },
+  "demey": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/demey",
+        "stream": true
+      }
+    ]
+  },
+  "herrmann_debroux": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines15/herrmann_debroux",
+        "stream": true
+      }
+    ]
+  },
+  "roi_baudouin": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/roi_baudouin",
+        "stream": true
+      }
+    ]
+  },
+  "heysel": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/heysel",
+        "stream": true
+      }
+    ]
+  },
+  "houba_brugmann": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/houba_brugmann",
+        "stream": true
+      }
+    ]
+  },
+  "stuyvenbergh": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/stuyvenbergh",
+        "stream": true
+      }
+    ]
+  },
+  "bockstael": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/bockstael",
+        "stream": true
+      }
+    ]
+  },
+  "pannenhuis": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/pannenhuis",
+        "stream": true
+      }
+    ]
+  },
+  "belgica": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/belgica",
+        "stream": true
+      }
+    ]
+  },
+  "simonis": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/simonis",
+        "stream": true
+      }
+    ]
+  },
+  "osseghem": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/osseghem",
+        "stream": true
+      }
+    ]
+  },
+  "delacroix": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/delacroix",
+        "stream": true
+      }
+    ]
+  },
+  "clemenceau": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/clemenceau",
+        "stream": true
+      }
+    ]
+  },
+  "gare_du_midi26": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/gare_du_midi26",
+        "stream": true
+      }
+    ]
+  },
+  "porte_de_hal26": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/porte_de_hal26",
+        "stream": true
+      }
+    ]
+  },
+  "hotel_des_monnaies": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/hotel_des_monnaies",
+        "stream": true
+      }
+    ]
+  },
+  "louise": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/louise",
+        "stream": true
+      }
+    ]
+  },
+  "porte_de_namur": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/porte_de_namur",
+        "stream": true
+      }
+    ]
+  },
+  "trone": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/trone",
+        "stream": true
+      }
+    ]
+  },
+  "arts_loi26": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/arts_loi26",
+        "stream": true
+      }
+    ]
+  },
+  "madou": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/madou",
+        "stream": true
+      }
+    ]
+  },
+  "botanique": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/botanique",
+        "stream": true
+      }
+    ]
+  },
+  "rogier26": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/rogier26",
+        "stream": true
+      }
+    ]
+  },
+  "yser": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/yser",
+        "stream": true
+      }
+    ]
+  },
+  "ribaucourt": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/ribaucourt",
+        "stream": true
+      }
+    ]
+  },
+  "elisabeth": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/elisabeth",
+        "stream": true
+      }
+    ]
+  },
+  "bordet": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/bordet",
+        "stream": true
+      }
+    ]
+  },
+  "paix": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/paix",
+        "stream": true
+      }
+    ]
+  },
+  "tilleul": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/tilleul",
+        "stream": true
+      }
+    ]
+  },
+  "verboekhoven": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/verboekhoven",
+        "stream": true
+      }
+    ]
+  },
+  "colignon": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/colignon",
+        "stream": true
+      }
+    ]
+  },
+  "liedts": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/liedts",
+        "stream": true
+      }
+    ]
+  },
+  "gare_du_nord": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/gare_du_nord",
+        "stream": true
+      }
+    ]
+  },
+  "rogier3": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/rogier3",
+        "stream": true
+      }
+    ]
+  },
+  "de_brouckere3": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/de_brouckere3",
+        "stream": true
+      }
+    ]
+  },
+  "bourse": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/bourse",
+        "stream": true
+      }
+    ]
+  },
+  "anneessens": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/anneessens",
+        "stream": true
+      }
+    ]
+  },
+  "gare_du_midi3": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/gare_du_midi3",
+        "stream": true
+      }
+    ]
+  },
+  "porte_de_hal3": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/porte_de_hal3",
+        "stream": true
+      }
+    ]
+  },
+  "parvis_de_saint_gilles": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/parvis_de_saint_gilles",
+        "stream": true
+      }
+    ]
+  },
+  "horta": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/horta",
+        "stream": true
+      }
+    ]
+  },
+  "albert": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/albert",
+        "stream": true
       }
     ]
   }
