@@ -79,7 +79,7 @@ public abstract class CarriageSoundsMixin {
         if (trainsounds$shouldUseCustomEngineSound(entity)) {
             // 🎛️ RÉGLAGE : 0.3 = 30% d'étouffement.
             // Si le jeu essaie de nous asseoir (target > 0.0), on limite la valeur à 0.3
-            return (originalTarget > 0.0) ? 0.2 : 0.0;
+            return (originalTarget > 0.0) ? 0.1 : 0.0;
         }
 
         // Sinon, comportement normal de Create
@@ -162,24 +162,24 @@ public abstract class CarriageSoundsMixin {
 
         // --- Profil M7 (Électrique) ---
         if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
+            if (normalizedSpeed <= 0.20f) {
+                // De 0% à 20% : Le son de base est totalement silencieux
+                currentMuffle = 0.0f;
+            } else if (normalizedSpeed <= 0.60f) {
+                // De 20% à 60% : Le son de base monte de 0% à 100%
+                // La plage de montée dure maintenant 40% (0.60 - 0.20)
+                float unMuffleProgress = (normalizedSpeed - 0.20f) / 0.40f;
+                currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
+            }
+        }
+        // --- Profil MX (Traditionnel) ---
+        else if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
             if (normalizedSpeed <= 0.15f) {
                 // De 0% à 15% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.60f) {
                 // De 15% à 60% : Le son de base monte de 0% à 100%
-                // La plage de montée dure maintenant 45% (0.60 - 0.15)
                 float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.45f;
-                currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
-            }
-        }
-        // --- Profil MX (Traditionnel/Défaut) ---
-        else if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.15f) {
-                // De 0% à 5% : Le son de base est totalement silencieux
-                currentMuffle = 0.0f;
-            } else if (normalizedSpeed <= 0.25f) {
-                // De 5% à 25% : Le son de base monte de 0% à 100%
-                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.10f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -191,7 +191,7 @@ public abstract class CarriageSoundsMixin {
         if (speedPerTick >= 0.001) {
             if ((pulseTime + phaseOffset) % 3 == 0) {
 
-                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.01f;
+                float pitchJitter = (world.random.nextFloat() - 0.8f) * 0.01f;
 
                 float actualBaseVol = baseVolume * 1.25f * currentMuffle;
 
@@ -258,7 +258,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.4f * userVolume, 0.0f, 1.4f);
+                        float finalM6Vol = Mth.clamp(m6StartVolume * 0.6f * userVolume, 0.0f, 0.6f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -286,7 +286,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalMxVol = Mth.clamp(mxStartVolume * 1.5f * userVolume, 0.0f, 1.5f);
+                        float finalMxVol = Mth.clamp(mxStartVolume * 0.6f * userVolume, 0.0f, 0.6f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -324,7 +324,7 @@ public abstract class CarriageSoundsMixin {
 
             if ((pulseTime + phaseOffset) % 9 == 0) {
 
-                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.01f;
+                float pitchJitter = (world.random.nextFloat() - 0.8f) * 0.01f;
 
                 float actualBaseVol = baseVolume * 1.9f * currentMuffle;
 
