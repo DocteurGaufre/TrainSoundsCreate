@@ -268,10 +268,10 @@
       }
     ]
   },
-  "beekkant": {
+  "beekkant15": {
     "sounds": [
       {
-        "name": "trainsounds:announce/lines15/beekkant",
+        "name": "trainsounds:announce/lines15/beekkant15",
         "stream": true
       }
     ]
@@ -340,10 +340,10 @@
       }
     ]
   },
-  "edde_merckx": {
+  "eddy_merckx": {
     "sounds": [
       {
-        "name": "trainsounds:announce/lines15/eddie_merckx",
+        "name": "trainsounds:announce/lines15/eddy_merckx",
         "stream": true
       }
     ]
@@ -480,6 +480,14 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/osseghem",
+        "stream": true
+      }
+    ]
+  },
+  "beekkant26": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/lines26/beekkant26",
         "stream": true
       }
     ]

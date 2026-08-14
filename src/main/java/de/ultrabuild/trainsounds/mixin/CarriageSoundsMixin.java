@@ -32,6 +32,9 @@ public abstract class CarriageSoundsMixin {
     @Unique
     private long trainsounds$lastTickTime = 0;
 
+    @Shadow
+    public abstract void finalizeSharedVolume(float volume); // Permet d'exécuter l'ordre de silence
+
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/AllSoundEvents$SoundEntry;playAt(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;FFZ)V"), remap = false)
     private void trainsounds$muteVanillaSteam(
             AllSoundEvents.SoundEntry soundEntry,
@@ -64,13 +67,27 @@ public abstract class CarriageSoundsMixin {
         this.submitSharedSoundVolume(location, volume);
     }
 
-    // 2. Empêcher Create de rendre les wagons arrière muets
+    // 2. Empêcher Create de rendre les wagons muets UNIQUEMENT pour la tête et la
+    // queue
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/entity/CarriageSounds;finalizeSharedVolume(F)V"), remap = false)
     private void trainsounds$preventMute(CarriageSounds instance, float volume) {
-        // Dans le code de base, Create appelle cette méthode avec la valeur "0" pour
-        // rendre les wagons muets.
-        // En laissant cette méthode vide, on neutralise purement et simplement cet
-        // ordre de silence.
+        // On récupère la position (l'index) de la voiture actuelle (0 = motrice)
+        int index = this.entity.carriageIndex;
+
+        // On récupère le nombre total de voitures qui composent ce train
+        int totalCarriages = this.entity.getCarriage().train.carriages.size();
+
+        // Est-ce la motrice (première) ou la dernière voiture du convoi ?
+        if (index == 0 || index == totalCarriages - 1) {
+            // C'est une extrémité : on annule purement et simplement l'ordre de silence
+            // (mute)
+            return;
+        }
+
+        // Si on arrive ici, c'est que c'est une voiture du milieu.
+        // On exécute la vraie méthode de Create pour la rendre muette et économiser les
+        // sons.
+        this.finalizeSharedVolume(volume);
     }
 
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/animation/LerpedFloat;chase", ordinal = 3), index = 0, remap = false)
@@ -162,13 +179,13 @@ public abstract class CarriageSoundsMixin {
 
         // --- Profil M7 (Électrique) ---
         if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.20f) {
-                // De 0% à 20% : Le son de base est totalement silencieux
+            if (normalizedSpeed <= 0.15f) {
+                // De 0% à 15% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.60f) {
-                // De 20% à 60% : Le son de base monte de 0% à 100%
-                // La plage de montée dure maintenant 40% (0.60 - 0.20)
-                float unMuffleProgress = (normalizedSpeed - 0.20f) / 0.40f;
+                // De 15% à 60% : Le son de base monte de 0% à 100%
+                // La plage de montée dure maintenant 45% (0.60 - 0.15 = 0.45)
+                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.45f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -180,6 +197,17 @@ public abstract class CarriageSoundsMixin {
             } else if (normalizedSpeed <= 0.60f) {
                 // De 15% à 60% : Le son de base monte de 0% à 100%
                 float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.45f;
+                currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
+            }
+        }
+        // --- Profil M6 (Diesel) ---
+        else if (selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get()) {
+            if (normalizedSpeed <= 0.05f) {
+                // De 0% à 5% : Le son de base est totalement silencieux
+                currentMuffle = 0.0f;
+            } else if (normalizedSpeed <= 0.60f) {
+                // De 5% à 60% : Le son de base monte de 0% à 100%
+                float unMuffleProgress = (normalizedSpeed - 0.05f) / 0.55f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -210,9 +238,9 @@ public abstract class CarriageSoundsMixin {
                 // Sons additionnels M7
                 if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
 
-                    // Son 1 : Aigu (0% à 20%)
-                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.20f) {
-                        float fadeIn = normalizedSpeed / 0.20f;
+                    // Son 1 : Aigu (0% à 15%)
+                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.15f) {
+                        float fadeIn = normalizedSpeed / 0.15f;
                         float start1Volume = Mth.clamp(fadeIn * 1.5f * userVolume, 0.1f, 1.5f);
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -220,13 +248,13 @@ public abstract class CarriageSoundsMixin {
                                 start1Volume, 1.0f + pitchJitter, false);
                     }
 
-                    // Son 2 : Grave (20% à 35%)
-                    if (normalizedSpeed > 0.20f && normalizedSpeed <= 0.35f) {
+                    // Son 2 : Grave (15% à 30%)
+                    if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.30f) {
                         float fadeOut = 1.0f;
 
-                        // Fade Out progressif, long et doux (de 25% à 35%) -> Plage de 0.15
-                        if (normalizedSpeed > 0.25f) {
-                            fadeOut = 1.0f - ((normalizedSpeed - 0.25f) / 0.15f);
+                        // Fade Out progressif, long et doux (de 20% à 30%) -> Plage de 0.10
+                        if (normalizedSpeed > 0.20f) {
+                            fadeOut = 1.0f - ((normalizedSpeed - 0.20f) / 0.10f);
                         }
 
                         // Le volume démarre directement au maximum (1.5) et ne subit que le Fade Out
