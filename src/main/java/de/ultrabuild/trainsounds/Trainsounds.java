@@ -49,6 +49,18 @@ public class Trainsounds {
                         "m6_start_1",
                         () -> SoundEvent.createVariableRangeEvent(
                                         ResourceLocation.fromNamespaceAndPath(MOD_ID, "m6_start_1")));
+        public static final java.util.function.Supplier<SoundEvent> MX_DEPARTURE_SOUND_EVENT = SOUND_EVENTS.register(
+                        "mx_departure",
+                        () -> SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath(MOD_ID, "mx_departure")));
+        public static final java.util.function.Supplier<SoundEvent> M6_DEPARTURE_SOUND_EVENT = SOUND_EVENTS.register(
+                        "m6_departure",
+                        () -> SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath(MOD_ID, "m6_departure")));
+        public static final java.util.function.Supplier<SoundEvent> M7_DEPARTURE_SOUND_EVENT = SOUND_EVENTS.register(
+                        "m7_departure",
+                        () -> SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath(MOD_ID, "m7_departure")));
         public static final java.util.function.Supplier<SoundEvent> WIND_SOUND_EVENT = SOUND_EVENTS.register(
                         "train_wind",
                         () -> SoundEvent.createVariableRangeEvent(

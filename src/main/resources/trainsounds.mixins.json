@@ -7,7 +7,9 @@
     "CarriageSoundsMixin",
     "CarriageContraptionEntityMixin",
     "TrainMixin",
-    "NavigationMixin"
+    "NavigationMixin",
+    "ScheduleRuntimeMixin",
+    "TrainSeparationConditionMixin"
   ],
   "client": [
     "client.ScreenAccessor",

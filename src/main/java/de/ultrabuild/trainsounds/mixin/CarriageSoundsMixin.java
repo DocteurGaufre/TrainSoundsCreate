@@ -94,8 +94,8 @@ public abstract class CarriageSoundsMixin {
     private double trainsounds$modifySeatCrossfadeTarget(double originalTarget) {
         // Si c'est un train géré par notre mod
         if (trainsounds$shouldUseCustomEngineSound(entity)) {
-            // 🎛️ RÉGLAGE : 0.3 = 30% d'étouffement.
-            // Si le jeu essaie de nous asseoir (target > 0.0), on limite la valeur à 0.3
+            // 🎛️ RÉGLAGE : 0.1 = 10% d'étouffement.
+            // Si le jeu essaie de nous asseoir (target > 0.0), on limite la valeur à 0.1
             return (originalTarget > 0.0) ? 0.1 : 0.0;
         }
 
@@ -219,7 +219,7 @@ public abstract class CarriageSoundsMixin {
         if (speedPerTick >= 0.001) {
             if ((pulseTime + phaseOffset) % 3 == 0) {
 
-                float pitchJitter = (world.random.nextFloat() - 0.8f) * 0.01f;
+                float pitchJitter = (world.random.nextFloat() - 0.5f) * 0.01f;
 
                 float actualBaseVol = baseVolume * 1.25f * currentMuffle;
 
@@ -286,7 +286,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalM6Vol = Mth.clamp(m6StartVolume * 0.6f * userVolume, 0.0f, 0.6f);
+                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.5f * userVolume, 0.0f, 1.5f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -314,7 +314,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalMxVol = Mth.clamp(mxStartVolume * 0.6f * userVolume, 0.0f, 0.6f);
+                        float finalMxVol = Mth.clamp(mxStartVolume * 1.5f * userVolume, 0.0f, 1.5f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -325,10 +325,8 @@ public abstract class CarriageSoundsMixin {
 
                 // --------------------------------------------------
                 // 💨 EFFET DE VENT AÉRODYNAMIQUE (Pour tous les trains)
-                // Le vent commence à se faire entendre à 30% de la vitesse max
                 if (normalizedSpeed > 0.05f) {
 
-                    // Calcul de la montée en puissance (de 0.0 à 1.0 sur la plage 30% -> 100%)
                     float windFadeIn = (normalizedSpeed - 0.05f) / 0.95f;
 
                     // Le volume augmente exponentiellement avec la vitesse (pour simuler la
@@ -350,49 +348,8 @@ public abstract class CarriageSoundsMixin {
                 }
             }
 
-            if ((pulseTime + phaseOffset) % 9 == 0) {
-
-                float pitchJitter = (world.random.nextFloat() - 0.8f) * 0.01f;
-
-                float actualBaseVol = baseVolume * 1.9f * currentMuffle;
-
-                // On ajoute notre sécurité ici
-                if (actualBaseVol > 0.0f) {
-                    world.playLocalSound(
-                            soundLocation.x,
-                            soundLocation.y,
-                            soundLocation.z,
-                            selectedSound,
-                            SoundSource.NEUTRAL,
-                            Mth.clamp(actualBaseVol, 0.0f, 2.0f), // <-- Plancher à 0.0f
-                            Mth.clamp((basePitch * 0.82f) + pitchJitter, 0.5f, 2.5f),
-                            false);
-                }
-            }
-
             return;
         }
-
-        // ==================================================
-        // 🔇 SON À L'ARRÊT (IDLE) - DÉSACTIVÉ
-        // ==================================================
-        /*
-         * if ((pulseTime + phaseOffset) % 6 == 0) {
-         * float actualIdleVol = 0.5f * userVolume * currentMuffle;
-         *
-         * if (actualIdleVol > 0.0f) {
-         * world.playLocalSound(
-         * soundLocation.x,
-         * soundLocation.y,
-         * soundLocation.z,
-         * selectedSound,
-         * SoundSource.NEUTRAL,
-         * actualIdleVol,
-         * 0.45f,
-         * false);
-         * }
-         * }
-         */
     }
 
     @Unique
@@ -449,16 +406,6 @@ public abstract class CarriageSoundsMixin {
                 yield Trainsounds.DEFAULT_SOUND_EVENT.get();
             }
         };
-    }
-
-    @Unique
-    private String trainsounds$resolveChannel(SoundEvent selectedSound) {
-        if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get() ||
-                selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get() ||
-                selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            return "electric"; // Vous pouvez grouper vos 3 métros sous le même curseur de volume
-        }
-        return "diesel";
     }
 
     @Unique
