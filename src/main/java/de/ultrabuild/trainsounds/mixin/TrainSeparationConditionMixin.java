@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -25,19 +26,12 @@ public abstract class TrainSeparationConditionMixin {
     @Unique
     private static final Map<UUID, Integer> trainsounds$departureTimers = new HashMap<>();
 
-    // 2. ASTUCE : On remplace la classe "DelayedWaitConditionContext" par un
-    // "Object" générique
-    @Inject(method = "runDelayed", at = @At("RETURN"), cancellable = true, remap = false)
-    private void trainsounds$interceptCrnDeparture(Object context, CallbackInfoReturnable<Boolean> cir) {
-
-        if (!cir.getReturnValueZ())
-            return;
+    // 2. LA CIBLE PARFAITE : On intercepte juste avant l'écriture dans l'historique
+    @Inject(method = "runDelayed", at = @At(value = "INVOKE", target = "Lde/mrjulsen/crn/data/train/DepartureHistory;updateDepartures(Ljava/lang/String;Lcom/simibubi/create/content/trains/entity/Train;)V", remap = false), cancellable = true, remap = false)
+    private void trainsounds$interceptCrnDeparture(@Coerce Object context, CallbackInfoReturnable<Boolean> cir) {
 
         try {
-            // 3. LA MAGIE : On utilise la "Réflexion" Java pour obliger l'ordinateur à
-            // extraire
-            // le Train et le Level cachés dans l'Object context, sans avoir besoin du code
-            // de CRN !
+            // 3. LA MAGIE : On utilise la "Réflexion" Java
             Method trainMethod = context.getClass().getMethod("train");
             Train train = (Train) trainMethod.invoke(context);
 
@@ -57,15 +51,17 @@ public abstract class TrainSeparationConditionMixin {
             // ⏱️ 45 ticks d'attente
             if (ticksWaited < 45) {
                 trainsounds$departureTimers.put(trainId, ticksWaited + 1);
+
+                // En forçant le retour à 'false', on coupe court à la méthode de CRN.
+                // L'historique n'est pas mis à jour et le train reste à quai !
                 cir.setReturnValue(false);
             } else {
                 trainsounds$departureTimers.remove(trainId);
+                // On ne fait rien : le code de CRN s'exécute normalement.
             }
 
         } catch (Exception e) {
-            // Sécurité absolue : Si CRN change son code interne un jour, le jeu ne crashera
-            // pas.
-            // L'erreur s'affichera dans la console et le train partira normalement.
+            // Sécurité absolue
             System.out.println("[TrainSounds] Erreur de lecture de CRN : " + e.getMessage());
         }
     }
@@ -99,8 +95,7 @@ public abstract class TrainSeparationConditionMixin {
         } else if (trainName.contains("m6")) {
             return Trainsounds.M6_DEPARTURE_SOUND_EVENT.get();
         } else if (trainName.contains("m1") || trainName.contains("m2") || trainName.contains("m3")
-                || trainName.contains("m4")
-                || trainName.contains("m5")) {
+                || trainName.contains("m4") || trainName.contains("m5")) {
             return Trainsounds.MX_DEPARTURE_SOUND_EVENT.get();
         }
 

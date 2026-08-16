@@ -73,28 +73,30 @@ public abstract class ScheduleRuntimeMixin {
     // ==================================================
     @Unique
     private int trainsounds$calculateWaitTime() {
-        if (currentEntry >= schedule.entries.size())
-            return -1;
+        if (currentEntry >= schedule.entries.size()) return -1;
         ScheduleEntry entry = schedule.entries.get(currentEntry);
 
-        // On lit l'horaire de la station exactement comme le fait Create
         for (List<ScheduleWaitCondition> list : entry.conditions) {
             int total = 0;
             boolean onlyDelays = true;
-
+            
             for (ScheduleWaitCondition condition : list) {
-                // S'il s'agit bien d'une condition de "Temps" (Delay)
                 if (condition instanceof ScheduledDelay wait) {
+                    
+                    // 🛡️ NOUVEAU CADENAS ANTI-CRN
+                    // Si la condition de temps provient du code de l'addon CRN (mrjulsen), on l'exclut !
+                    if (condition.getClass().getName().contains("mrjulsen")) {
+                        onlyDelays = false;
+                        break;
+                    }
+                    
                     total += wait.totalWaitTicks();
                 } else {
-                    // Si on trouve autre chose (ex: condition d'inventaire), on annule le chrono
                     onlyDelays = false;
                     break;
                 }
             }
-
-            // Si la colonne ne contient QUE des conditions de temps, on renvoie la durée
-            // totale !
+            
             if (onlyDelays && total > 0) {
                 return total;
             }
