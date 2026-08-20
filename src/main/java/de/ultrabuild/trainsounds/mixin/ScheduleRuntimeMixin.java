@@ -58,7 +58,7 @@ public abstract class ScheduleRuntimeMixin {
         // Create
         int totalWaitTicks = trainsounds$calculateWaitTime();
 
-        if (totalWaitTicks > 0) {
+        if (totalWaitTicks > 60) {
             trainsounds$waitTicksElapsed++;
 
             if (!trainsounds$departureSoundPlayed && trainsounds$waitTicksElapsed >= (totalWaitTicks - 45)) {
@@ -73,30 +73,32 @@ public abstract class ScheduleRuntimeMixin {
     // ==================================================
     @Unique
     private int trainsounds$calculateWaitTime() {
-        if (currentEntry >= schedule.entries.size()) return -1;
+        if (currentEntry >= schedule.entries.size())
+            return -1;
         ScheduleEntry entry = schedule.entries.get(currentEntry);
 
         for (List<ScheduleWaitCondition> list : entry.conditions) {
             int total = 0;
             boolean onlyDelays = true;
-            
+
             for (ScheduleWaitCondition condition : list) {
                 if (condition instanceof ScheduledDelay wait) {
-                    
+
                     // 🛡️ NOUVEAU CADENAS ANTI-CRN
-                    // Si la condition de temps provient du code de l'addon CRN (mrjulsen), on l'exclut !
+                    // Si la condition de temps provient du code de l'addon CRN (mrjulsen), on
+                    // l'exclut !
                     if (condition.getClass().getName().contains("mrjulsen")) {
                         onlyDelays = false;
                         break;
                     }
-                    
+
                     total += wait.totalWaitTicks();
                 } else {
                     onlyDelays = false;
                     break;
                 }
             }
-            
+
             if (onlyDelays && total > 0) {
                 return total;
             }
@@ -109,17 +111,27 @@ public abstract class ScheduleRuntimeMixin {
     // ==================================================
     @Unique
     private void trainsounds$playDepartureSound(Level level) {
+        // Attention : on appelle bien la méthode sans paramètre "train" ici
         SoundEvent departureSound = trainsounds$getDepartureSoundForTrain();
         if (departureSound == null)
             return;
 
-        for (Carriage carriage : train.carriages) {
-            CarriageContraptionEntity entity = carriage.anyAvailableEntity();
-            if (entity != null) {
-                float pitchJitter = 1.0f + (level.random.nextFloat() - 0.5f) * 0.02f;
-                // Joue le son pour tous les joueurs depuis la position de l'entité
-                level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), departureSound, SoundSource.NEUTRAL,
-                        2.5f, pitchJitter);
+        // On utilise la variable "train" globale de la classe ScheduleRuntime
+        int totalCarriages = train.carriages.size();
+
+        for (int i = 0; i < totalCarriages; i++) {
+            // Uniquement la première et la dernière voiture
+            if (i == 0 || i == totalCarriages - 1) {
+                Carriage carriage = train.carriages.get(i);
+                CarriageContraptionEntity entity = carriage.anyAvailableEntity();
+
+                if (entity != null) {
+                    float pitchJitter = 1.0f + (level.random.nextFloat() - 0.5f) * 0.02f;
+                    // Joue le son pour tous les joueurs depuis la position de l'entité
+                    level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), departureSound,
+                            SoundSource.NEUTRAL,
+                            1.0f, pitchJitter);
+                }
             }
         }
     }
@@ -135,7 +147,7 @@ public abstract class ScheduleRuntimeMixin {
             return Trainsounds.M6_DEPARTURE_SOUND_EVENT.get();
         } else if (trainName.contains("m1") || trainName.contains("m2") || trainName.contains("m3")
                 || trainName.contains("m4")
-                || trainName.contains("m5")) {
+                || trainName.contains("mx")) {
             return Trainsounds.MX_DEPARTURE_SOUND_EVENT.get();
         }
 

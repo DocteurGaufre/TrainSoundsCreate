@@ -75,12 +75,20 @@ public abstract class TrainSeparationConditionMixin {
         if (departureSound == null)
             return;
 
-        for (Carriage carriage : train.carriages) {
-            CarriageContraptionEntity entity = carriage.anyAvailableEntity();
-            if (entity != null) {
-                float pitchJitter = 1.0f + (level.random.nextFloat() - 0.5f) * 0.02f;
-                level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), departureSound, SoundSource.NEUTRAL,
-                        2.5f, pitchJitter);
+        int totalCarriages = train.carriages.size();
+
+        for (int i = 0; i < totalCarriages; i++) {
+            // Uniquement la première et la dernière voiture
+            if (i == 0 || i == totalCarriages - 1) {
+                Carriage carriage = train.carriages.get(i);
+                CarriageContraptionEntity entity = carriage.anyAvailableEntity();
+
+                if (entity != null) {
+                    float pitchJitter = 1.0f + (level.random.nextFloat() - 0.5f) * 0.02f;
+                    level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), departureSound,
+                            SoundSource.NEUTRAL,
+                            1.0f, pitchJitter);
+                }
             }
         }
     }
@@ -95,7 +103,7 @@ public abstract class TrainSeparationConditionMixin {
         } else if (trainName.contains("m6")) {
             return Trainsounds.M6_DEPARTURE_SOUND_EVENT.get();
         } else if (trainName.contains("m1") || trainName.contains("m2") || trainName.contains("m3")
-                || trainName.contains("m4") || trainName.contains("m5")) {
+                || trainName.contains("m4") || trainName.contains("mx")) {
             return Trainsounds.MX_DEPARTURE_SOUND_EVENT.get();
         }
 

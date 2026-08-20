@@ -4,6 +4,8 @@ import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.CarriageSounds;
+import com.simibubi.create.content.trains.entity.Train;
+
 import de.ultrabuild.trainsounds.Trainsounds;
 import de.ultrabuild.trainsounds.logic.EngineToggleCarrier;
 import net.minecraft.sounds.SoundEvent;
@@ -128,10 +130,12 @@ public abstract class CarriageSoundsMixin {
             return;
         }
 
-        // --- CORRECTION DU BUG DE SILENCE ICI ---
-        // On contourne le ConfigManager (qui renvoyait 0) et on force le volume à 100%
-        float userVolume = 1.0f;
-        // ----------------------------------------
+        float userVolume = net.minecraft.client.Minecraft.getInstance().options
+                .getSoundSourceVolume(SoundSource.MASTER);
+
+        // 🎧 NOUVEAU : Application de l'isolation acoustique si le son vient de
+        // l'extérieur
+        userVolume *= trainsounds$getAcousticIsolationMultiplier(carriageEntity);
 
         Vec3 soundLocation = carriageEntity.position();
 
@@ -179,24 +183,24 @@ public abstract class CarriageSoundsMixin {
 
         // --- Profil M7 (Électrique) ---
         if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.15f) {
-                // De 0% à 15% : Le son de base est totalement silencieux
+            if (normalizedSpeed <= 0.175f) {
+                // De 0% à 17.5% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.60f) {
-                // De 15% à 60% : Le son de base monte de 0% à 100%
-                // La plage de montée dure maintenant 45% (0.60 - 0.15 = 0.45)
-                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.45f;
+                // De 17.5% à 60% : Le son de base monte de 0% à 100%
+                // La plage de montée dure maintenant 42.5% (0.60 - 0.175 = 0.425)
+                float unMuffleProgress = (normalizedSpeed - 0.175f) / 0.425f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
         // --- Profil MX (Traditionnel) ---
         else if (selectedSound == Trainsounds.DEFAULT_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.15f) {
-                // De 0% à 15% : Le son de base est totalement silencieux
+            if (normalizedSpeed <= 0.10f) {
+                // De 0% à 10% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.60f) {
-                // De 15% à 60% : Le son de base monte de 0% à 100%
-                float unMuffleProgress = (normalizedSpeed - 0.15f) / 0.45f;
+                // De 10% à 60% : Le son de base monte de 0% à 100%
+                float unMuffleProgress = (normalizedSpeed - 0.10f) / 0.50f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -230,7 +234,7 @@ public abstract class CarriageSoundsMixin {
                             soundLocation.z,
                             selectedSound,
                             SoundSource.NEUTRAL,
-                            Mth.clamp(actualBaseVol, 0.0f, 1.5f), // Plancher descendu à 0.0f
+                            Mth.clamp(actualBaseVol, 0.0f, 1.0f), // Plancher descendu à 0.0f
                             Mth.clamp((basePitch * 1.05f) + pitchJitter, 0.5f, 2.5f),
                             false);
                 }
@@ -238,27 +242,29 @@ public abstract class CarriageSoundsMixin {
                 // Sons additionnels M7
                 if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
 
-                    // Son 1 : Aigu (0% à 15%)
-                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.15f) {
-                        float fadeIn = normalizedSpeed / 0.15f;
-                        float start1Volume = Mth.clamp(fadeIn * 1.5f * userVolume, 0.1f, 1.5f);
+                    // Son 1 : Aigu (0% à 17.5%)
+                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.175f) {
+                        // On ajuste la division pour correspondre au nouveau plafond de 17.5%
+                        float fadeIn = normalizedSpeed / 0.175f;
+
+                        float start1Volume = Mth.clamp(fadeIn * 1.0f * userVolume, 0.1f, 1.0f);
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
                                 Trainsounds.M7_START1_SOUND_EVENT.get(), SoundSource.NEUTRAL,
                                 start1Volume, 1.0f + pitchJitter, false);
                     }
 
-                    // Son 2 : Grave (15% à 30%)
-                    if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.30f) {
+                    // Son 2 : Grave (17.5% à 32.5%)
+                    if (normalizedSpeed > 0.175f && normalizedSpeed <= 0.325f) {
                         float fadeOut = 1.0f;
 
-                        // Fade Out progressif, long et doux (de 20% à 30%) -> Plage de 0.10
-                        if (normalizedSpeed > 0.20f) {
-                            fadeOut = 1.0f - ((normalizedSpeed - 0.20f) / 0.10f);
+                        // Fade Out progressif sur une plage de 10% (0.10f)
+                        // Le fade out commence donc à 22.5% (0.325 - 0.10 = 0.225)
+                        if (normalizedSpeed > 0.225f) {
+                            fadeOut = 1.0f - ((normalizedSpeed - 0.225f) / 0.10f);
                         }
 
-                        // Le volume démarre directement au maximum (1.5) et ne subit que le Fade Out
-                        float start2Volume = Mth.clamp(fadeOut * 1.5f * userVolume, 0.0f, 1.5f);
+                        float start2Volume = Mth.clamp(fadeOut * 1.0f * userVolume, 0.0f, 1.0f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -286,7 +292,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.5f * userVolume, 0.0f, 1.5f);
+                        float finalM6Vol = Mth.clamp(m6StartVolume * 1.0f * userVolume, 0.0f, 1.0f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -314,7 +320,7 @@ public abstract class CarriageSoundsMixin {
                         }
 
                         // Application du volume final
-                        float finalMxVol = Mth.clamp(mxStartVolume * 1.5f * userVolume, 0.0f, 1.5f);
+                        float finalMxVol = Mth.clamp(mxStartVolume * 1.0f * userVolume, 0.0f, 1.0f);
 
                         world.playLocalSound(
                                 soundLocation.x, soundLocation.y, soundLocation.z,
@@ -332,7 +338,7 @@ public abstract class CarriageSoundsMixin {
                     // Le volume augmente exponentiellement avec la vitesse (pour simuler la
                     // pression de l'air)
                     float windVolumeCurve = (float) Math.pow(windFadeIn, 0.9);
-                    float windVolume = Mth.clamp(windVolumeCurve * 1.5f * userVolume, 0.0f, 1.5f);
+                    float windVolume = Mth.clamp(windVolumeCurve * 1.0f * userVolume, 0.0f, 1.0f);
 
                     // Le pitch monte très légèrement pour simuler l'air qui siffle plus vite
                     // On y ajoute notre fameux pitchJitter pour éviter tout effet de
@@ -464,5 +470,35 @@ public abstract class CarriageSoundsMixin {
         }
 
         return positionDelta;
+    }
+
+    // ==================================================
+    // 🎧 ISOLATION ACOUSTIQUE (ANC)
+    // ==================================================
+    @Unique
+    private float trainsounds$getAcousticIsolationMultiplier(CarriageContraptionEntity soundSourceEntity) {
+        // 1. On récupère le joueur local (celui qui écoute)
+        net.minecraft.client.player.LocalPlayer player = net.minecraft.client.Minecraft.getInstance().player;
+        if (player == null)
+            return 1.0f;
+
+        // 2. On remonte l'arbre des entités (Joueur -> Siège -> Wagon)
+        net.minecraft.world.entity.Entity rootVehicle = player.getRootVehicle();
+
+        // 3. Est-ce que le véhicule final est bien un wagon de Create ?
+        if (rootVehicle instanceof CarriageContraptionEntity playerCarriage) {
+
+            Train playerTrain = playerCarriage.getCarriage().train;
+            Train sourceTrain = soundSourceEntity.getCarriage().train;
+
+            // 4. Si le son provient d'un train et que ce n'est PAS le nôtre, on l'étouffe !
+            if (playerTrain != null && sourceTrain != null && playerTrain != sourceTrain) {
+                // L'atténuation de 70%
+                return 0.3f;
+            }
+        }
+
+        // Si le joueur est à pied ou dans le même train, le volume reste à 100%
+        return 1.0f;
     }
 }
