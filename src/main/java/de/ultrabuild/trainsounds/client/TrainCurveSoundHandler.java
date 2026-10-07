@@ -43,19 +43,28 @@ public class TrainCurveSoundHandler {
         if (mc.isPaused() || mc.level == null || mc.player == null)
             return;
 
+        // On enregistre la position de vos oreilles
+        Vec3 playerPos = mc.player.position();
+
+        // 🎟️ PASS VIP : On identifie le train actuel du joueur
+        Train playerTrain = null;
+        if (mc.player.getVehicle() instanceof com.simibubi.create.content.trains.entity.CarriageContraptionEntity cce) {
+            if (cce.getCarriage() != null) {
+                playerTrain = cce.getCarriage().train;
+            }
+        }
+
         for (Train train : Create.RAILWAYS.trains.values()) {
             if (train.carriages.isEmpty())
                 continue;
 
-            // Si le train est à l'arrêt ou presque, on ignore tous ses wagons
-            // (Optimisation)
-            if (Math.abs(train.speed) < 0.05)
-                continue;
+            boolean isTrainStopped = Math.abs(train.speed) < 0.05;
 
             // ==========================================
             // ANALYSE INDÉPENDANTE DE CHAQUE WAGON
             // ==========================================
             for (Carriage carriage : train.carriages) {
+                CurveSquealSoundInstance squeal = ACTIVE_SQUEALS.get(carriage);
 
                 boolean isCarriageInCurve = false;
                 Vec3 carriagePos = null;
@@ -78,35 +87,45 @@ public class TrainCurveSoundHandler {
                                 || isHorizontalCurve(trailingBogey.trailing().edge)) {
                             isCarriageInCurve = true;
                         }
-
-                        // On place le son au centre exact du wagon
                         Vec3 trailingPos = trailingBogey.getAnchorPosition();
                         if (trailingPos != null) {
-                            if (carriagePos != null) {
-                                carriagePos = carriagePos.add(trailingPos).scale(0.5);
-                            } else {
-                                carriagePos = trailingPos;
-                            }
+                            carriagePos = (carriagePos != null) ? carriagePos.add(trailingPos).scale(0.5) : trailingPos;
                         }
                     }
+                }
+
+                // 🛡️ LE FILTRE SPATIAL (Le bouclier anti-surcharge)
+                boolean isTooFar = true;
+                if (train != playerTrain && carriagePos != null) {
+                    // distanceToSqr est beaucoup plus rapide à calculer qu'une vraie distance (pas
+                    // de racine carrée)
+                    // 64 * 64 = 4096 (Ce qui équivaut à un rayon de 64 blocs autour du joueur)
+                    isTooFar = carriagePos.distanceToSqr(playerPos) > 4096.0;
+                }
+
+                // Si le train est arrêté OU qu'il est à plus de 64 blocs de vous
+                if (isTrainStopped || isTooFar) {
+                    if (squeal != null) {
+                        squeal.updateState(false, 0.0, null);
+                        if (squeal.isStopped() || squeal.canBeRemoved()) {
+                            ACTIVE_SQUEALS.remove(carriage);
+                        }
+                    }
+                    continue; // On bloque l'exécution ici, le canal audio est sauvé !
                 }
 
                 // ==========================================
                 // GESTION DU SON (Attaché au wagon)
                 // ==========================================
-                CurveSquealSoundInstance squeal = ACTIVE_SQUEALS.get(carriage);
-
                 if (isCarriageInCurve && squeal == null && carriagePos != null) {
                     squeal = new CurveSquealSoundInstance(Trainsounds.CURVE_SOUND_EVENT.get(), carriagePos);
-                    squeal.updateState(isCarriageInCurve, train.speed, carriagePos);
-                    Minecraft.getInstance().getSoundManager().play(squeal);
+                    squeal.updateState(true, train.speed, carriagePos);
+                    mc.getSoundManager().play(squeal);
                     ACTIVE_SQUEALS.put(carriage, squeal);
                 }
 
                 if (squeal != null) {
-                    // Le son voyage en permanence avec son wagon !
                     squeal.updateState(isCarriageInCurve, train.speed, carriagePos);
-
                     if (squeal.isStopped() || squeal.canBeRemoved()) {
                         ACTIVE_SQUEALS.remove(carriage);
                     }

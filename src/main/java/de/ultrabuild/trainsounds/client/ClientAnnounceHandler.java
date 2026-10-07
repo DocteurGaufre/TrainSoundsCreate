@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class ClientAnnounceHandler {
@@ -31,9 +30,9 @@ public class ClientAnnounceHandler {
             SimpleSoundInstance sound = new SimpleSoundInstance(
                     data.soundId(), // <--- CORRECTION : On passe directement le ResourceLocation reçu du réseau !
                     SoundSource.VOICE, // Assignation au canal "Voix/Paroles" des options
-                    1.0F, // Volume
+                    0.65F, // Volume
                     1.0F, // Pitch (vitesse)
-                    RandomSource.create(), // Générateur aléatoire
+                    mc.player.getRandom(), // Générateur aléatoire
                     false, // Répétition (Non)
                     0, // Délai (0)
                     SoundInstance.Attenuation.NONE, // Pas d'atténuation 3D (son Interface)

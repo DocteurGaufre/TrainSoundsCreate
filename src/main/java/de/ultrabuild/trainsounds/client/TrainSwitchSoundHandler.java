@@ -21,14 +21,24 @@ import java.util.WeakHashMap;
 @EventBusSubscriber(modid = Trainsounds.MOD_ID, value = Dist.CLIENT)
 public class TrainSwitchSoundHandler {
 
-    // Garde en mémoire le dernier aiguillage frappé par chaque bogie
     private static final Map<CarriageBogey, TrackNode> BOGEY_LAST_SWITCH = new WeakHashMap<>();
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.isPaused() || mc.level == null)
+        if (mc.isPaused() || mc.level == null || mc.player == null)
             return;
+
+        // 🎯 On stocke la position des oreilles du joueur
+        Vec3 playerPos = mc.player.position();
+
+        // 🎟️ PASS VIP : On identifie le train actuel du joueur
+        Train playerTrain = null;
+        if (mc.player.getVehicle() instanceof com.simibubi.create.content.trains.entity.CarriageContraptionEntity cce) {
+            if (cce.getCarriage() != null) {
+                playerTrain = cce.getCarriage().train;
+            }
+        }
 
         for (Train train : Create.RAILWAYS.trains.values()) {
             if (train.carriages.isEmpty() || train.graph == null)
@@ -37,7 +47,23 @@ public class TrainSwitchSoundHandler {
                 continue;
 
             for (Carriage carriage : train.carriages) {
-                checkBogeyProximity(carriage.leadingBogey(), train);
+                CarriageBogey leadingBogey = carriage.leadingBogey();
+
+                // 🛡️ BOUCLIER SPATIAL (Ultra-rapide)
+                // Avant de faire de la géométrie de graphe de rails, on vérifie si la voiture
+                // est proche
+                if (leadingBogey != null) {
+                    Vec3 bogeyPos = leadingBogey.getAnchorPosition();
+                    // 4096 = 64 blocs au carré
+                    if (train != playerTrain && bogeyPos != null && bogeyPos.distanceToSqr(playerPos) > 4096.0) {
+                        continue; // La voiture est trop loin, le processeur passe à la suivante !
+                    }
+                }
+
+                // Si on arrive ici, c'est que le train est à moins de 64 blocs. On autorise les
+                // calculs lourds !
+                checkBogeyProximity(leadingBogey, train);
+
                 if (carriage.isOnTwoBogeys()) {
                     checkBogeyProximity(carriage.trailingBogey(), train);
                 }
@@ -56,32 +82,25 @@ public class TrainSwitchSoundHandler {
         if (n1 == null || n2 == null || bogeyPos == null)
             return;
 
-        // On teste la proximité avec les deux extrémités du rail actuel
         verifyNode(n1, bogey, train, bogeyPos);
         verifyNode(n2, bogey, train, bogeyPos);
     }
 
     private static void verifyNode(TrackNode node, CarriageBogey bogey, Train train, Vec3 bogeyPos) {
-        // Si le noeud n'a que 2 chemins, c'est un rail normal, on ignore
         if (train.graph.getConnectionsFrom(node).size() <= 2)
             return;
 
         Vec3 nodePos = node.getLocation().getLocation();
         double distanceSquared = nodePos.distanceToSqr(bogeyPos);
 
-        // Rayon de détection (s'agrandit légèrement si le train roule très vite pour ne
-        // pas le rater)
         double threshold = Math.max(1.5, Math.abs(train.speed) * 1.5);
 
         if (distanceSquared < threshold * threshold) {
-            // Si on est proche de l'aiguillage et qu'on ne l'a pas encore "tapé"
             if (BOGEY_LAST_SWITCH.get(bogey) != node) {
                 playClackSound(bogey, train);
-                BOGEY_LAST_SWITCH.put(bogey, node); // On enregistre pour ne pas mitrailler le son
+                BOGEY_LAST_SWITCH.put(bogey, node);
             }
         } else {
-            // Si on s'est éloigné d'au moins 5 blocs (25 au carré) de ce noeud, on l'oublie
-            // Ça permet de pouvoir re-déclencher le son si le train fait marche arrière !
             if (BOGEY_LAST_SWITCH.get(bogey) == node && distanceSquared > 25.0) {
                 BOGEY_LAST_SWITCH.remove(bogey);
             }

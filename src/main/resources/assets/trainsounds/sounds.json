@@ -5,7 +5,7 @@
         "name": "trainsounds:electric",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -15,7 +15,7 @@
         "name": "trainsounds:diesel",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -25,7 +25,7 @@
         "name": "trainsounds:default",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -35,7 +35,7 @@
         "name": "trainsounds:m7_start_1",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -45,7 +45,7 @@
         "name": "trainsounds:m7_start_2",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -55,7 +55,7 @@
         "name": "trainsounds:mx_start_1",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -65,7 +65,7 @@
         "name": "trainsounds:m6_start_1",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -75,7 +75,7 @@
         "name": "trainsounds:mx_departure",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 48
+        "attenuation_distance": 80
       }
     ]
   },
@@ -85,7 +85,7 @@
         "name": "trainsounds:m6_departure",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 48
+        "attenuation_distance": 80
       }
     ]
   },
@@ -95,7 +95,7 @@
         "name": "trainsounds:m7_departure",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 48
+        "attenuation_distance": 80
       }
     ]
   },
@@ -105,7 +105,7 @@
         "name": "trainsounds:train_wind",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 64
+        "attenuation_distance": 96
       }
     ]
   },
@@ -115,7 +115,7 @@
         "name": "trainsounds:train_switch",
         "type": "file",
         "stream": false,
-        "attenuation_distance": 48
+        "attenuation_distance": 40
       }
     ]
   },
@@ -135,7 +135,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/stockel",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -143,7 +143,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/crainhem",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -151,7 +151,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/alma",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -159,7 +159,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/vandervelde",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -167,7 +167,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/roodebeek",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -175,7 +175,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/tomberg",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -183,7 +183,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/gribaumont",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -191,7 +191,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/josephine_charlotte",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -199,7 +199,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/montgomery",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -207,7 +207,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/merode",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -215,7 +215,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/merode1",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -223,7 +223,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/merode5",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -231,7 +231,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/schuman",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -239,7 +239,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/maelbeek",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -247,7 +247,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/arts_loi15",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -255,7 +255,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/parc",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -263,7 +263,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/gare_centrale",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -271,7 +271,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/de_brouckere15",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -279,7 +279,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/sainte_catherine",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -287,7 +287,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/comte_de_flandre",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -295,7 +295,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/etangs_noirs",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -303,7 +303,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/beekkant15",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -311,7 +311,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/gare_de_ouest",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -319,7 +319,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/jacques_brel",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -327,7 +327,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/aumale",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -335,7 +335,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/saint_guidon",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -343,7 +343,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/veeweyde",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -351,7 +351,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/bizet",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -359,7 +359,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/la_roue",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -367,7 +367,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/ceria",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -375,7 +375,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/eddy_merckx",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -383,7 +383,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/erasme",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -391,7 +391,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/thieffry",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -399,7 +399,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/petillon",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -407,7 +407,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/hankar",
-        "stream": false
+        "stream": true
       }
     ] 
   },
@@ -415,7 +415,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/delta",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -423,7 +423,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/beaulieu",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -431,7 +431,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/demey",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -439,7 +439,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines15/herrmann_debroux",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -447,7 +447,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/roi_baudouin",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -455,7 +455,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/heysel",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -463,7 +463,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/houba_brugmann",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -471,7 +471,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/stuyvenbergh",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -479,7 +479,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/bockstael",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -487,7 +487,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/pannenhuis",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -495,7 +495,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/belgica",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -503,7 +503,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/simonis",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -511,7 +511,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/osseghem",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -519,7 +519,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/beekkant26",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -527,7 +527,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/delacroix",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -535,7 +535,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/clemenceau",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -543,7 +543,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/gare_du_midi26",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -551,7 +551,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/porte_de_hal26",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -559,7 +559,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/hotel_des_monnaies",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -567,7 +567,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/louise",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -575,7 +575,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/porte_de_namur",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -583,7 +583,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/trone",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -591,7 +591,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/arts_loi26",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -599,7 +599,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/madou",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -607,7 +607,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/botanique",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -615,7 +615,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/rogier26",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -623,7 +623,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/yser",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -631,7 +631,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/ribaucourt",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -639,7 +639,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/lines26/elisabeth",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -647,7 +647,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/bordet",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -655,7 +655,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/paix",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -663,7 +663,15 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/tilleul",
-        "stream": false
+        "stream": true
+      }
+    ]
+  },
+  "riga": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/riga",
+        "stream": true
       }
     ]
   },
@@ -671,7 +679,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/verboekhoven",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -679,7 +687,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/colignon",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -687,7 +695,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/liedts",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -695,7 +703,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/gare_du_nord",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -703,7 +711,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/rogier3",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -711,7 +719,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/de_brouckere3",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -719,7 +727,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/bourse",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -727,7 +735,15 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/anneessens",
-        "stream": false
+        "stream": true
+      }
+    ]
+  },
+  "toots_thielemans": {
+    "sounds": [
+      {
+        "name": "trainsounds:announce/line3/toots_thielemans",
+        "stream": true
       }
     ]
   },
@@ -735,7 +751,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/gare_du_midi3",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -743,7 +759,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/porte_de_hal3",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -751,7 +767,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/parvis_de_saint_gilles",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -759,7 +775,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/horta",
-        "stream": false
+        "stream": true
       }
     ]
   },
@@ -767,7 +783,7 @@
     "sounds": [
       {
         "name": "trainsounds:announce/line3/albert",
-        "stream": false
+        "stream": true
       }
     ]
   }

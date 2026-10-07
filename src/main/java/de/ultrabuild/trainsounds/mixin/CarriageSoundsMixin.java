@@ -183,13 +183,13 @@ public abstract class CarriageSoundsMixin {
 
         // --- Profil M7 (Électrique) ---
         if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
-            if (normalizedSpeed <= 0.175f) {
-                // De 0% à 17.5% : Le son de base est totalement silencieux
+            if (normalizedSpeed <= 0.125f) {
+                // De 0% à 12.5% : Le son de base est totalement silencieux
                 currentMuffle = 0.0f;
             } else if (normalizedSpeed <= 0.60f) {
-                // De 17.5% à 60% : Le son de base monte de 0% à 100%
-                // La plage de montée dure maintenant 42.5% (0.60 - 0.175 = 0.425)
-                float unMuffleProgress = (normalizedSpeed - 0.175f) / 0.425f;
+                // De 12.5% à 60% : Le son de base monte de 0% à 100%
+                // La plage de montée dure maintenant 47.5% (0.60 - 0.125 = 0.475)
+                float unMuffleProgress = (normalizedSpeed - 0.125f) / 0.475f;
                 currentMuffle = Mth.lerp(unMuffleProgress, 0.0f, 1.0f);
             }
         }
@@ -242,10 +242,10 @@ public abstract class CarriageSoundsMixin {
                 // Sons additionnels M7
                 if (selectedSound == Trainsounds.ELECTRIC_SOUND_EVENT.get()) {
 
-                    // Son 1 : Aigu (0% à 17.5%)
-                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.175f) {
-                        // On ajuste la division pour correspondre au nouveau plafond de 17.5%
-                        float fadeIn = normalizedSpeed / 0.175f;
+                    // Son 1 : Aigu (0% à 15%)
+                    if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.15f) {
+                        // On ajuste la division pour correspondre au nouveau plafond de 15%
+                        float fadeIn = normalizedSpeed / 0.15f;
 
                         float start1Volume = Mth.clamp(fadeIn * 1.0f * userVolume, 0.1f, 1.0f);
                         world.playLocalSound(
@@ -254,14 +254,14 @@ public abstract class CarriageSoundsMixin {
                                 start1Volume, 1.0f + pitchJitter, false);
                     }
 
-                    // Son 2 : Grave (17.5% à 32.5%)
-                    if (normalizedSpeed > 0.175f && normalizedSpeed <= 0.325f) {
+                    // Son 2 : Grave (15% à 35%)
+                    if (normalizedSpeed > 0.15f && normalizedSpeed <= 0.35f) {
                         float fadeOut = 1.0f;
 
                         // Fade Out progressif sur une plage de 10% (0.10f)
-                        // Le fade out commence donc à 22.5% (0.325 - 0.10 = 0.225)
+                        // Le fade out commence donc à 22.5% (0.35 - 0.125 = 0.225)
                         if (normalizedSpeed > 0.225f) {
-                            fadeOut = 1.0f - ((normalizedSpeed - 0.225f) / 0.10f);
+                            fadeOut = 1.0f - ((normalizedSpeed - 0.225f) / 0.125f);
                         }
 
                         float start2Volume = Mth.clamp(fadeOut * 1.0f * userVolume, 0.0f, 1.0f);
@@ -277,7 +277,7 @@ public abstract class CarriageSoundsMixin {
                 // Sons additionnels M6
                 if (selectedSound == Trainsounds.DIESEL_SOUND_EVENT.get()) {
 
-                    // Son M6 1 : De 0% à 25%
+                    // Son M6 : De 0% à 25%
                     if (normalizedSpeed > 0.0f && normalizedSpeed <= 0.25f) {
                         float m6StartVolume = 1.0f;
 
@@ -442,7 +442,7 @@ public abstract class CarriageSoundsMixin {
             float pitchEnd = 1.40f;
 
             // On utilise une courbe exponentielle légère pour que la montée soit naturelle
-            float curvedSpeed = (float) Math.pow(normalizedSpeed, 0.70f);
+            float curvedSpeed = (float) Math.pow(normalizedSpeed, 0.90f);
 
             float finalMxPitch = Mth.lerp(curvedSpeed, pitchStart, pitchEnd);
 
