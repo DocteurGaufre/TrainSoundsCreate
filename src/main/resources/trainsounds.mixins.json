@@ -8,8 +8,7 @@
     "CarriageContraptionEntityMixin",
     "TrainMixin",
     "NavigationMixin",
-    "ScheduleRuntimeMixin",
-    "TrainSeparationConditionMixin"
+    "ScheduleRuntimeMixin"
   ],
   "client": [
     "client.ScreenAccessor",
